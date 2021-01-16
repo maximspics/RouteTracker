@@ -71,6 +71,9 @@
                                     <segment title="Смешанная"/>
                                     <segment title="Рельеф"/>
                                 </segments>
+                                <connections>
+                                    <action selector="mapTypeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="ofs-tw-jk3"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -104,8 +107,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="btnMyCurrentLocation" destination="sF5-pq-sSd" id="qNb-nh-uwj"/>
+                        <outlet property="btnStartDetection" destination="zko-4e-3Fe" id="k4m-V8-klH"/>
                         <outlet property="btnTrafficOnOff" destination="3We-x4-p2R" id="5n5-yl-ZYR"/>
-                        <outlet property="mapType" destination="tbR-hZ-OCC" id="yNl-o1-gq2"/>
+                        <outlet property="mapType" destination="tbR-hZ-OCC" id="WuT-8q-55K"/>
                         <outlet property="mapView" destination="NmP-VA-dkh" id="6t3-TR-fME"/>
                         <outlet property="zoomIn" destination="768-Rf-8AF" id="ZzL-hn-wYS"/>
                         <outlet property="zoomOut" destination="1Uh-sE-IaL" id="nzv-cB-zy7"/>
