@@ -9,11 +9,14 @@ import UIKit
 import GoogleMaps
 import CoreLocation
 
+// MARK: - MapViewControllerDelegate implementation
 protocol MapViewControllerDelegate: class {
     func selectAddres(_ coordinate: CLLocationCoordinate2D?)
 }
 
 class MapViewController: UIViewController {
+    
+    // MARK: - Outlets
     @IBOutlet weak var mapView: GMSMapView!
     @IBOutlet weak var mapType: UISegmentedControl!
     @IBOutlet weak var zoomIn: UIButton!
@@ -21,8 +24,10 @@ class MapViewController: UIViewController {
     @IBOutlet weak var btnTrafficOnOff: UIButton!
     @IBOutlet weak var btnStartDetection: UIButton!
     @IBOutlet weak var btnMyCurrentLocation: UIButton!
+    @IBOutlet var btnCollection: [UIButton]!
     
-    let coordinate = CLLocationCoordinate2D(latitude: 55.79622385766241, longitude: 37.53777835518122)
+    // MARK: - Properties
+    let coordinate = CLLocationCoordinate2D(latitude: 55.753215, longitude: 37.622504)
     let geocoder = CLGeocoder()
     
     var locationManager: CLLocationManager?
@@ -36,11 +41,12 @@ class MapViewController: UIViewController {
     let zoomLevelStep: Float = 1
     
     var isUpdateLocationStart = false
-    var isUpdateLocationRestricted: Bool = true
+    var hasPermission: Bool = false
     var isSearchBarEmpty: Bool {
       return searchController?.searchBar.text?.isEmpty ?? true
     }
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
        
@@ -49,6 +55,7 @@ class MapViewController: UIViewController {
         configurLocationManager()
     }
     
+    // MARK: - Methods
     func configureSearch() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
@@ -64,29 +71,27 @@ class MapViewController: UIViewController {
             searchController.hidesNavigationBarDuringPresentation = false
             searchController.searchResultsUpdater = self
             searchController.searchBar.placeholder = "Введите адрес для поиска"
+            searchController.searchBar.setValue("Отменить", forKey: "cancelButtonText")
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
         }
     }
     
     func configurLocationManager() {
-        // По-умолчанию локация запрещена
-        isUpdateLocationRestricted = true
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager = CLLocationManager()
             locationManager?.requestWhenInUseAuthorization()
             locationManager?.delegate = self
-         
-            switch CLLocationManager.authorizationStatus() {
-            case .authorizedWhenInUse, .authorizedAlways:
-                isUpdateLocationRestricted = false
-            default:
-                isUpdateLocationRestricted = true
-            }
             
+            if let manager = locationManager {
+                switch manager.authorizationStatus {
+                case .restricted, .denied:
+                    hasPermission = false
+                default:
+                    hasPermission = true
+                }
+            } 
         }
-        
     }
     
     func configureMap() {
@@ -102,34 +107,61 @@ class MapViewController: UIViewController {
         
         mapType.selectedSegmentIndex = 1
         
-        zoomIn.layer.cornerRadius = 5
-        zoomIn.layer.opacity = 0.8
-        zoomIn.layer.borderColor = UIColor.darkGray.cgColor
-        zoomIn.layer.borderWidth = 1
-        
-        zoomOut.layer.cornerRadius = 5
-        zoomOut.layer.opacity = 0.8
-        zoomOut.layer.borderColor = UIColor.darkGray.cgColor
-        zoomOut.layer.borderWidth = 1
-        
-        btnMyCurrentLocation.layer.cornerRadius = 5
-        btnMyCurrentLocation.layer.opacity = 0.8
-        btnMyCurrentLocation.layer.borderColor = UIColor.darkGray.cgColor
-        btnMyCurrentLocation.layer.borderWidth = 1
-        
-        btnTrafficOnOff.layer.cornerRadius = 5
-        btnTrafficOnOff.layer.opacity = 0.8
-        btnTrafficOnOff.layer.borderColor = UIColor.darkGray.cgColor
-        btnTrafficOnOff.layer.borderWidth = 1
-                
-        btnTrafficOnOff.setImage(UIImage(systemName: (mapView.isTrafficEnabled == true ? "car.fill" : "car")),
-                                 for: .normal
-        )
+        for btn in btnCollection {
+            
+            btn.layer.cornerRadius = 25
+            btn.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+            
+        }
+        mapType.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        btnStartDetection.layer.cornerRadius = 8
+        btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+    }
+    
+    func addMarker() {
+        locationManager?.requestLocation()
+        let location = locationManager?.location?.coordinate ?? coordinate
+        let marker = GMSMarker(position: location)
+        marker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
+        marker.icon = GMSMarker.markerImage(with: .green)
+        marker.map = mapView
+        mapView.animate(toLocation: location)
+        self.marker = marker
+    }
+    
+    func removeMarker() {
+        marker?.map = nil
+        marker = nil
+    }
+    
+    func startUpdatingLocation() {
+        UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+            self.btnStartDetection.setTitle("Остановить отслеживание", for: .normal)
+            self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.95)
+            self.locationManager?.startUpdatingLocation()
+        }, completion: nil)
+    }
+    
+    func stopUpdatingLocation() {
+        UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+            self.btnStartDetection.setTitle("Отслеживать моё местоположение", for: .normal)
+            self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+            self.locationManager?.stopUpdatingLocation()
+        }, completion: nil)
     }
 
+    // MARK: - Actions
     @IBAction func goHome(_ sender: Any) {
+        isUpdateLocationStart = false
+        stopUpdatingLocation()
+        removeMarker()
+        let marker = GMSMarker(position: coordinate)
+        marker.title = "Home"
+        marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
+        marker.icon = GMSMarker.markerImage(with: .green)
+        marker.map = mapView
         mapView.animate(toLocation: coordinate)
-
+        self.marker = marker
     }
     
     @IBAction func mapTypeChanged(_ sender: Any) {
@@ -171,100 +203,92 @@ class MapViewController: UIViewController {
     
     @IBAction func trafficOnOffClicked(_ sender: Any) {
         mapView.isTrafficEnabled = !mapView.isTrafficEnabled
-        btnTrafficOnOff.setImage(UIImage(systemName: (mapView.isTrafficEnabled == true ? "car.fill" : "car")),
-                                 for: .normal
-        )
-
+        UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+            self.btnTrafficOnOff.backgroundColor = self.mapView.isTrafficEnabled == true ? #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95) : nil
+            self.btnTrafficOnOff.layer.borderWidth = self.mapView.isTrafficEnabled == true ? 0 : 2
+            self.btnTrafficOnOff.layer.borderColor = self.mapView.isTrafficEnabled == true ? nil : #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        }, completion: nil)
+        
     }
     
     @IBAction func btnAddMarkerClicked(_ sender: Any) {
-        if marker == nil {
-            marker = GMSMarker(position: coordinate)
-            marker?.title = "Test"
-            marker?.snippet = "Some description"
-            marker?.map = mapView
-            marker?.icon = GMSMarker.markerImage(with: .green)
-            mapView.animate(toLocation: coordinate)
-            
-        } else {
-            marker?.map = nil
-            marker = nil
-        }
+        removeMarker()
+        addMarker()
     }
     
     @IBAction func btnMyCurrentLocationClicked(_ sender: Any) {
-        if isUpdateLocationRestricted {
-            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
-            
-        } else {
+        if hasPermission {
             locationManager?.requestLocation()
-            
+            let location = locationManager?.location
+            mapView.animate(toLocation: location?.coordinate ?? coordinate)
+        } else {
+            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
         }
     }
     
     @IBAction func btnStartDetectionClicked(_ sender: Any) {
-        if isUpdateLocationRestricted {
-            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
-            
-        } else {
+        if hasPermission {
             if isUpdateLocationStart {
-                btnStartDetection.setTitle("Отслеживать", for: .normal)
-                btnStartDetection.backgroundColor = .systemBlue
-                locationManager?.stopUpdatingLocation()
+                stopUpdatingLocation()
             } else {
-                btnStartDetection.setTitle("Остановить отслеживание", for: .normal)
-                btnStartDetection.backgroundColor = .systemGreen
-                locationManager?.startUpdatingLocation()
+                startUpdatingLocation()
             }
             
             isUpdateLocationStart = !isUpdateLocationStart
+            
+        } else {
+            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
+            
         }
     }
 }
 
-// MARK: GMSMApViewDelegate
+// MARK: - GMSMApViewDelegate
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        if let marker = marker {
-            marker.position = coordinate
-        } else {
-            marker = GMSMarker(position: coordinate)
-            marker?.title = "Test"
-            marker?.snippet = "Some description"
-            marker?.map = mapView
-            marker?.icon = GMSMarker.markerImage(with: .green)
-        }
+        removeMarker()
+        let marker = GMSMarker(position: coordinate)
+        marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
+        marker.icon = GMSMarker.markerImage(with: .green)
+        marker.map = mapView
+        mapView.animate(toLocation: coordinate)
+        self.marker = marker
     }
     
     func mapView(_ mapView: GMSMapView, didTapPOIWithPlaceID placeID: String, name: String, location: CLLocationCoordinate2D) {
-        infoMarker.snippet = "Долгота: \(location.latitude),\nширота: \(location.longitude)"
+        infoMarker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
         infoMarker.position = location
         infoMarker.title = name
         infoMarker.opacity = 0
         infoMarker.infoWindowAnchor.y = 0.4
         infoMarker.map = mapView
         mapView.selectedMarker = infoMarker
+        mapView.animate(toLocation: location)
     }
 
 }
 
-// MARK: CLLocationManagerDelegate
+// MARK: - CLLocationManagerDelegate
 extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            mapView.animate(toLocation: location.coordinate)
-            
-            let driveMarker = GMSMarker(position: location.coordinate)
-            driveMarker.map = mapView
+        print(locations)
+        if isUpdateLocationStart {
+            if let location = locations.first {
+                mapView.animate(toLocation: location.coordinate)
+                let driveMarker = GMSMarker(position: location.coordinate)
+                driveMarker.icon = GMSMarker.markerImage(with: .magenta)
+                driveMarker.map = mapView
+            }
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error.localizedDescription)
     }
+    
 }
 
-// MARK: UISearchBarDelegate
+// MARK: - UISearchBarDelegate
 extension MapViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text {
@@ -283,7 +307,7 @@ extension MapViewController: UISearchResultsUpdating {
     
 }
 
-// MARK: MapViewControllerDelegate
+// MARK: - MapViewControllerDelegate
 extension MapViewController: MapViewControllerDelegate {
     func selectAddres(_ coordinate: CLLocationCoordinate2D?) {
         if let coordinate = coordinate {

@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 
 class ResultViewController: UIViewController {
-    // MARK: Outlets
+    // MARK: - Outlets
     @IBOutlet weak var tableView: UITableView! {
         didSet {
             tableView.delegate = self
@@ -17,23 +17,23 @@ class ResultViewController: UIViewController {
         }
     }
     
-    // MARK: Properties
+    // MARK: - Properties
     weak var mapViewDelegate: MapViewControllerDelegate?
     var results: [CLPlacemark] = []
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
-    // MARK: Method
+    // MARK: - Method
     func update() {
         tableView.reloadData()
     }
 
 }
 
-// MARK: UITableViewDelegate
+// MARK: - UITableViewDelegate
 extension ResultViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         mapViewDelegate?.selectAddres(results[indexPath.row].location?.coordinate)
@@ -41,7 +41,7 @@ extension ResultViewController: UITableViewDelegate {
     }
 }
 
-// MARK: UITableViewDataSource
+// MARK: - UITableViewDataSource
 extension ResultViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         results.count

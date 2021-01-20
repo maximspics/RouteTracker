@@ -122,16 +122,10 @@
 		2AC6444525B1E05F00551D44 /* RouteTracker */ = {
 			isa = PBXGroup;
 			children = (
-				2AC6444625B1E05F00551D44 /* AppDelegate.swift */,
-				2AC6444825B1E05F00551D44 /* SceneDelegate.swift */,
-				2AC6444A25B1E05F00551D44 /* MapViewController.swift */,
-				2AC6444C25B1E05F00551D44 /* Main.storyboard */,
-				2AC6444F25B1E06200551D44 /* Assets.xcassets */,
-				2AC6445125B1E06200551D44 /* LaunchScreen.storyboard */,
-				2AC6445425B1E06200551D44 /* Info.plist */,
-				2AC6448925B1FB1600551D44 /* ResultViewController.swift */,
-				2AC6448E25B1FB4A00551D44 /* ResultViewCell.swift */,
-				2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */,
+				2AC6449F25B2F6D500551D44 /* App */,
+				2AC644A125B2F70500551D44 /* Core */,
+				2AC644A325B2F75D00551D44 /* Resources */,
+				2AC644A525B2F83B00551D44 /* Environments */,
 			);
 			path = RouteTracker;
 			sourceTree = "<group>";
@@ -152,6 +146,68 @@
 				2AC6446A25B1E06200551D44 /* Info.plist */,
 			);
 			path = RouteTrackerUITests;
+			sourceTree = "<group>";
+		};
+		2AC6449F25B2F6D500551D44 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2AC6444625B1E05F00551D44 /* AppDelegate.swift */,
+				2AC6444825B1E05F00551D44 /* SceneDelegate.swift */,
+				2AC644A025B2F6F400551D44 /* Flows */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2AC644A025B2F6F400551D44 /* Flows */ = {
+			isa = PBXGroup;
+			children = (
+				2AC644A425B2F7AA00551D44 /* MapScreen */,
+			);
+			path = Flows;
+			sourceTree = "<group>";
+		};
+		2AC644A125B2F70500551D44 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2AC644A225B2F70C00551D44 /* Helpers */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		2AC644A225B2F70C00551D44 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2AC644A325B2F75D00551D44 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2AC6444C25B1E05F00551D44 /* Main.storyboard */,
+				2AC6445125B1E06200551D44 /* LaunchScreen.storyboard */,
+				2AC6444F25B1E06200551D44 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2AC644A425B2F7AA00551D44 /* MapScreen */ = {
+			isa = PBXGroup;
+			children = (
+				2AC6444A25B1E05F00551D44 /* MapViewController.swift */,
+				2AC6448925B1FB1600551D44 /* ResultViewController.swift */,
+				2AC6448E25B1FB4A00551D44 /* ResultViewCell.swift */,
+			);
+			path = MapScreen;
+			sourceTree = "<group>";
+		};
+		2AC644A525B2F83B00551D44 /* Environments */ = {
+			isa = PBXGroup;
+			children = (
+				2AC6445425B1E06200551D44 /* Info.plist */,
+			);
+			path = Environments;
 			sourceTree = "<group>";
 		};
 		548F712A6497FDD6ED080122 /* Frameworks */ = {
@@ -599,7 +655,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ANZY857GD5;
-				INFOPLIST_FILE = RouteTracker/Info.plist;
+				INFOPLIST_FILE = RouteTracker/Environments/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -619,7 +675,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ANZY857GD5;
-				INFOPLIST_FILE = RouteTracker/Info.plist;
+				INFOPLIST_FILE = RouteTracker/Environments/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
