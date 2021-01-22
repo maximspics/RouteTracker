@@ -18,7 +18,7 @@ class ResultViewController: UIViewController {
     }
     
     // MARK: - Properties
-    weak var mapViewDelegate: MapViewControllerDelegate?
+    var mapViewDelegate: LocationServiceDelegate?
     var results: [CLPlacemark] = []
     
     // MARK: - Lifecycle

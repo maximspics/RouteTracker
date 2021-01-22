@@ -8,64 +8,97 @@
 import UIKit
 import GoogleMaps
 import CoreLocation
-
-// MARK: - MapViewControllerDelegate implementation
-protocol MapViewControllerDelegate: class {
-    func selectAddres(_ coordinate: CLLocationCoordinate2D?)
-}
+import RealmSwift
 
 class MapViewController: UIViewController {
     
     // MARK: - Outlets
-    @IBOutlet weak var mapView: GMSMapView!
-    @IBOutlet weak var mapType: UISegmentedControl!
+    @IBOutlet weak var mapView: GMSMapView! {
+        didSet {
+            mapView.delegate = self
+            mapView.isTrafficEnabled = true
+            mapView.isMyLocationEnabled = true
+            mapView.settings.compassButton = true
+        }
+    }
+    @IBOutlet weak var mapType: UISegmentedControl! {
+        didSet {
+            mapType.selectedSegmentIndex = 1
+            mapType.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        }
+    }
     @IBOutlet weak var zoomIn: UIButton!
     @IBOutlet weak var zoomOut: UIButton!
     @IBOutlet weak var btnTrafficOnOff: UIButton!
-    @IBOutlet weak var btnStartDetection: UIButton!
+    @IBOutlet weak var btnStartDetection: UIButton! {
+        didSet {
+            btnStartDetection.layer.cornerRadius = 8
+            btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        }
+    }
     @IBOutlet weak var btnMyCurrentLocation: UIButton!
-    @IBOutlet var btnCollection: [UIButton]!
+    @IBOutlet weak var btnWorkoutList: UIButton! {
+        didSet {
+            btnWorkoutList.layer.cornerRadius = 8
+            btnWorkoutList.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        }
+    }
+    @IBOutlet var btnCollection: [UIButton]! {
+        didSet {
+            for btn in btnCollection {
+                btn.layer.cornerRadius = 25
+                btn.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+            }
+        }
+    }
     
     // MARK: - Properties
-    let coordinate = CLLocationCoordinate2D(latitude: 55.753215, longitude: 37.622504)
+    let homeCoordinate = CLLocationCoordinate2D(latitude: 55.752455, longitude: 37.623033)
     let geocoder = CLGeocoder()
     
-    var locationManager: CLLocationManager?
-    var searchController: UISearchController?
+    var locationService = LocationService.shared
+    var workoutService = WorkoutService()
+    var trackService = TrackService()
+    var currentWorkout: Workout?
     
     var searchMarker: GMSMarker?
     var marker: GMSMarker?
-    let infoMarker = GMSMarker()
+    let placeInfoMarker = GMSMarker()
     
     var currentZoomLevel: Float = 17
     let zoomLevelStep: Float = 1
     
-    var isUpdateLocationStart = false
-    var hasPermission: Bool = false
+    var searchController: UISearchController?
     var isSearchBarEmpty: Bool {
       return searchController?.searchBar.text?.isEmpty ?? true
+    }
+    
+    var routePath: GMSMutablePath?
+    var workoutCount: Int = 0
+    var route: GMSPolyline? {
+        didSet {
+            route?.strokeColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+            route?.strokeWidth = 5
+        }
     }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
        
+        locationService.delegate = self
+        workoutCount = workoutService.count()
         configureSearch()
         configureMap()
-        configurLocationManager()
+        
     }
     
     // MARK: - Methods
     func configureSearch() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
         if let resultViewController = storyboard.instantiateViewController(identifier: "resultViewController") as? ResultViewController {
             searchController = UISearchController(searchResultsController: resultViewController)
-            
-            guard let searchController = searchController else {
-                return
-            }
-            
+            guard let searchController = searchController else { return }
             definesPresentationContext = true
             searchController.obscuresBackgroundDuringPresentation = false
             searchController.hidesNavigationBarDuringPresentation = false
@@ -77,50 +110,15 @@ class MapViewController: UIViewController {
         }
     }
     
-    func configurLocationManager() {
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager = CLLocationManager()
-            locationManager?.requestWhenInUseAuthorization()
-            locationManager?.delegate = self
-            
-            if let manager = locationManager {
-                switch manager.authorizationStatus {
-                case .restricted, .denied:
-                    hasPermission = false
-                default:
-                    hasPermission = true
-                }
-            } 
-        }
-    }
-    
     func configureMap() {
-        let camera = GMSCameraPosition.init(target: coordinate, zoom: currentZoomLevel)
-        
+        let camera = GMSCameraPosition.init(target: homeCoordinate, zoom: currentZoomLevel)
         mapView.camera = camera
-        mapView.delegate = self
-        
         mapView.mapType = .hybrid
-        mapView.isTrafficEnabled = true
-        mapView.isMyLocationEnabled = true
-        mapView.settings.compassButton = true
-        
-        mapType.selectedSegmentIndex = 1
-        
-        for btn in btnCollection {
-            
-            btn.layer.cornerRadius = 25
-            btn.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
-            
-        }
-        mapType.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
-        btnStartDetection.layer.cornerRadius = 8
-        btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
     }
     
     func addMarker() {
-        locationManager?.requestLocation()
-        let location = locationManager?.location?.coordinate ?? coordinate
+        locationService.currentLocation()
+        let location = locationService.locationManager?.location?.coordinate ?? homeCoordinate
         let marker = GMSMarker(position: location)
         marker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
         marker.icon = GMSMarker.markerImage(with: .green)
@@ -134,33 +132,55 @@ class MapViewController: UIViewController {
         marker = nil
     }
     
-    func startUpdatingLocation() {
+    func startWorkout() {
         UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.btnStartDetection.setTitle("Остановить отслеживание", for: .normal)
+            self.btnStartDetection.setTitle("Остановить тренировку", for: .normal)
             self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.95)
-            self.locationManager?.startUpdatingLocation()
         }, completion: nil)
     }
     
-    func stopUpdatingLocation() {
+    func stopWorkout() {
         UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.btnStartDetection.setTitle("Отслеживать моё местоположение", for: .normal)
+            self.btnStartDetection.setTitle("Начать тренировку", for: .normal)
             self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
-            self.locationManager?.stopUpdatingLocation()
         }, completion: nil)
+    }
+    
+    func configureRoutePath() {
+        route?.map = nil
+        routePath = nil
+        route = GMSPolyline()
+        route?.map = mapView
+        routePath = GMSMutablePath()
+    }
+    
+    func loadPathFromWorkoutWith(activityID: String) {
+        guard let paths = trackService.listBy(workoutID: activityID), !paths.isEmpty else { return }
+        guard let firstCoordinate = paths.first else { return }
+        
+        currentWorkout = workoutService.loadBy(workoutID: activityID)
+        
+        mapView.animate(toLocation: CLLocationCoordinate2D(latitude: firstCoordinate.latitude,
+                                                           longitude: firstCoordinate.longitude)
+        )
+        
+        configureRoutePath()
+                
+        paths.forEach { path in
+            routePath?.add(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
+            route?.path = routePath
+        }
     }
 
     // MARK: - Actions
     @IBAction func goHome(_ sender: Any) {
-        isUpdateLocationStart = false
-        stopUpdatingLocation()
         removeMarker()
-        let marker = GMSMarker(position: coordinate)
+        let marker = GMSMarker(position: homeCoordinate)
         marker.title = "Home"
-        marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
+        marker.snippet = "Широта: \(homeCoordinate.latitude)\nДолгота: \(homeCoordinate.longitude)"
         marker.icon = GMSMarker.markerImage(with: .green)
         marker.map = mapView
-        mapView.animate(toLocation: coordinate)
+        mapView.animate(toLocation: homeCoordinate)
         self.marker = marker
     }
     
@@ -212,34 +232,66 @@ class MapViewController: UIViewController {
     }
     
     @IBAction func btnAddMarkerClicked(_ sender: Any) {
-        removeMarker()
-        addMarker()
+        if marker == nil {
+            addMarker()
+        } else {
+            removeMarker()
+        }
     }
     
     @IBAction func btnMyCurrentLocationClicked(_ sender: Any) {
-        if hasPermission {
-            locationManager?.requestLocation()
-            let location = locationManager?.location
-            mapView.animate(toLocation: location?.coordinate ?? coordinate)
-        } else {
+        guard locationService.isUpdateLocationRestricted == false else {
             showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
+            return
         }
+        
+        locationService.currentLocation()
+        
     }
     
     @IBAction func btnStartDetectionClicked(_ sender: Any) {
-        if hasPermission {
-            if isUpdateLocationStart {
-                stopUpdatingLocation()
-            } else {
-                startUpdatingLocation()
+        guard locationService.isUpdateLocationRestricted == false else {
+            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
+            return
+        }
+        
+        if locationService.isUpdateLocationStarted == false {
+            currentWorkout = workoutService.start()
+            locationService.start()
+            workoutCount += 1
+        } else {
+            currentWorkout = workoutService.stop()
+            locationService.stop()
+        }
+    }
+    
+    @IBAction func btnWorkoutListClicked(_ sender: Any) {
+        guard workoutCount > 0 else {
+            showErrorMessage(message: "Нет записанных тренировок.")
+            return
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let destination = storyboard.instantiateViewController(identifier: "workoutListController") as? WorkoutListViewController else { return }
+        
+        destination.didWorkoutSelect = { [weak self] activityID in
+            self?.loadPathFromWorkoutWith(activityID: activityID)
+        }
+        
+        destination.didWorkoutDelete = { [weak self] activityID in
+            guard let self = self else { return }
+            
+            if self.currentWorkout?.activityID == activityID {
+                self.configureRoutePath()
+                self.currentWorkout = nil
             }
             
-            isUpdateLocationStart = !isUpdateLocationStart
-            
-        } else {
-            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
-            
+            if self.workoutService.removeBy(workoutID: activityID) {
+                self.trackService.removePathWith(workoutID: activityID)
+                self.workoutCount -= 1
+            }
         }
+        
+        navigationController?.present(destination, animated: true)
     }
 }
 
@@ -256,36 +308,16 @@ extension MapViewController: GMSMapViewDelegate {
     }
     
     func mapView(_ mapView: GMSMapView, didTapPOIWithPlaceID placeID: String, name: String, location: CLLocationCoordinate2D) {
-        infoMarker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
-        infoMarker.position = location
-        infoMarker.title = name
-        infoMarker.opacity = 0
-        infoMarker.infoWindowAnchor.y = 0.4
-        infoMarker.map = mapView
-        mapView.selectedMarker = infoMarker
+        placeInfoMarker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
+        placeInfoMarker.position = location
+        placeInfoMarker.title = name
+        placeInfoMarker.opacity = 0
+        placeInfoMarker.infoWindowAnchor.y = 0.4
+        placeInfoMarker.map = mapView
+        mapView.selectedMarker = placeInfoMarker
         mapView.animate(toLocation: location)
     }
 
-}
-
-// MARK: - CLLocationManagerDelegate
-extension MapViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(locations)
-        if isUpdateLocationStart {
-            if let location = locations.first {
-                mapView.animate(toLocation: location.coordinate)
-                let driveMarker = GMSMarker(position: location.coordinate)
-                driveMarker.icon = GMSMarker.markerImage(with: .magenta)
-                driveMarker.map = mapView
-            }
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error.localizedDescription)
-    }
-    
 }
 
 // MARK: - UISearchBarDelegate
@@ -307,8 +339,29 @@ extension MapViewController: UISearchResultsUpdating {
     
 }
 
-// MARK: - MapViewControllerDelegate
-extension MapViewController: MapViewControllerDelegate {
+// MARK: - LocationServiceDelegate
+extension MapViewController: LocationServiceDelegate {
+    func willUpdateLocationStarted() {
+        startWorkout()
+        configureRoutePath()
+    }
+    
+    func willUpdateLocationStopped() {
+        stopWorkout()
+    }
+    
+    func didLocationChanged(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) {
+        guard let coordinate = coordinate else { return }
+        mapView.animate(toLocation: coordinate)
+              
+        routePath?.add(coordinate)
+        route?.path = routePath
+        
+        trackService.track(workout: currentWorkout, coordinate: coordinate)
+    }
+    
+    func didUpdateIsInactive(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) { }
+    
     func selectAddres(_ coordinate: CLLocationCoordinate2D?) {
         if let coordinate = coordinate {
             if let searchMarker = searchMarker {
@@ -323,5 +376,5 @@ extension MapViewController: MapViewControllerDelegate {
             mapView.animate(toLocation: coordinate)
         }
     }
-    
 }
+
