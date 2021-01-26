@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import GoogleMaps
 import RealmSwift
 
 protocol TrackServiceDelegate {
@@ -34,7 +35,7 @@ class TrackService: NSObject {
     func listBy(workoutID: String) -> [Path]? {
         guard let trackList = service.get(Path.self)?
                 .filter("activityID == '\(workoutID)'")
-                .sorted(byKeyPath: "timestamp", ascending: true) else {
+                .sorted(byKeyPath: "date", ascending: true) else {
             
             return nil
         }
@@ -48,5 +49,9 @@ class TrackService: NSObject {
                                   .filter("activityID == '\(workoutID)'") {
             try? service.delete(items: trackList)
         }
+    }
+    
+    func calculateDistance(from firstCoordinate: CLLocationCoordinate2D, to lastCoordinate: CLLocationCoordinate2D) -> Double {
+        return Double(GMSGeometryDistance(firstCoordinate, lastCoordinate))
     }
 }

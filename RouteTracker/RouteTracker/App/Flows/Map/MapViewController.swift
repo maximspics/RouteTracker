@@ -52,6 +52,16 @@ class MapViewController: UIViewController {
         }
     }
     
+    @IBOutlet weak var lblWelcomeMessage: UILabel! {
+        didSet {
+            lblWelcomeMessage.layer.cornerRadius = 10
+            lblWelcomeMessage.layer.borderWidth = 1
+            lblWelcomeMessage.layer.borderColor = UIColor.systemRed.cgColor
+            lblWelcomeMessage.isHidden = true
+            lblWelcomeMessage.text = ""
+        }
+    }
+    
     // MARK: - Properties
     let homeCoordinate = CLLocationCoordinate2D(latitude: 55.752455, longitude: 37.623033)
     let geocoder = CLGeocoder()
@@ -82,21 +92,40 @@ class MapViewController: UIViewController {
         }
     }
     
+    var onWorkoutList: (() -> Void)?
+    var onLogout: (() -> Void)?
+    var welcomeMessage: String?
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         locationService.delegate = self
         workoutCount = workoutService.count()
         configureSearch()
         configureMap()
-        
+        guard let welcomeMessage = welcomeMessage else { return }
+        showWelcomeLabelWith(message: welcomeMessage)
     }
     
     // MARK: - Methods
+    private func showWelcomeLabelWith(message: String) {
+        lblWelcomeMessage.layer.opacity = 0
+        lblWelcomeMessage.isHidden = false
+        lblWelcomeMessage.text = message
+        
+        UIView.animate(withDuration: 2, animations: {
+            self.lblWelcomeMessage.layer.opacity = 1
+        }, completion: { _ in
+            UIView.animate(withDuration: 5) {
+                self.lblWelcomeMessage.layer.opacity = 0
+            }
+        })
+    }
+    
     func configureSearch() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let resultViewController = storyboard.instantiateViewController(identifier: "resultViewController") as? ResultViewController {
+        if let resultViewController = storyboard.instantiateViewController(identifier: "ResultViewController") as? ResultViewController {
             searchController = UISearchController(searchResultsController: resultViewController)
             guard let searchController = searchController else { return }
             definesPresentationContext = true
@@ -116,17 +145,6 @@ class MapViewController: UIViewController {
         mapView.mapType = .hybrid
     }
     
-    func addMarker() {
-        locationService.currentLocation()
-        let location = locationService.locationManager?.location?.coordinate ?? homeCoordinate
-        let marker = GMSMarker(position: location)
-        marker.snippet = "Широта: \(location.latitude)\nДолгота: \(location.longitude)"
-        marker.icon = GMSMarker.markerImage(with: .green)
-        marker.map = mapView
-        mapView.animate(toLocation: location)
-        self.marker = marker
-    }
-    
     func removeMarker() {
         marker?.map = nil
         marker = nil
@@ -134,7 +152,7 @@ class MapViewController: UIViewController {
     
     func startWorkout() {
         UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.btnStartDetection.setTitle("Остановить тренировку", for: .normal)
+            self.btnStartDetection.setTitle("Закончить тренировку", for: .normal)
             self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.95)
         }, completion: nil)
     }
@@ -169,6 +187,22 @@ class MapViewController: UIViewController {
         paths.forEach { path in
             routePath?.add(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
             route?.path = routePath
+        }
+    }
+    
+    func onWorkoutSelect(_ activityID: String) {
+        loadPathFromWorkoutWith(activityID: activityID)
+    }
+    
+    func onWorkoutDelete(_ activityID: String) {
+        if currentWorkout?.activityID == activityID {
+            configureRoutePath()
+            currentWorkout = nil
+        }
+        
+        if workoutService.removeBy(workoutID: activityID) {
+            trackService.removePathWith(workoutID: activityID)
+            workoutCount -= 1
         }
     }
 
@@ -231,12 +265,20 @@ class MapViewController: UIViewController {
         
     }
     
-    @IBAction func btnAddMarkerClicked(_ sender: Any) {
-        if marker == nil {
-            addMarker()
-        } else {
-            removeMarker()
+    @IBAction func btnLogoutClicked(_ sender: Any) {
+        UserDefaults.standard.set(false, forKey: "isLogin")
+        
+        let actionVC = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+        let actionOK = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.onLogout?()
         }
+        
+        let actionCancel = UIAlertAction(title: "Нет", style: .cancel, handler: nil)
+        
+        actionVC.addAction(actionOK)
+        actionVC.addAction(actionCancel)
+        
+        present(actionVC, animated: true)
     }
     
     @IBAction func btnMyCurrentLocationClicked(_ sender: Any) {
@@ -260,7 +302,15 @@ class MapViewController: UIViewController {
             locationService.start()
             workoutCount += 1
         } else {
-            currentWorkout = workoutService.stop()
+            var totalDistance: Double?
+            
+            if let lastLocation = locationService.lastKnownLocation,
+                let firstLocation = locationService.firstKnownLocation {
+                print("lastLocation: \(lastLocation), firstLocation: \(firstLocation)")
+                totalDistance = trackService.calculateDistance(from: firstLocation, to: lastLocation)
+            }
+            print("totalDistance: \(String(describing: totalDistance))")
+            workoutService.stop(distance: totalDistance)
             locationService.stop()
         }
     }
@@ -270,28 +320,13 @@ class MapViewController: UIViewController {
             showErrorMessage(message: "Нет записанных тренировок.")
             return
         }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let destination = storyboard.instantiateViewController(identifier: "workoutListController") as? WorkoutListViewController else { return }
         
-        destination.didWorkoutSelect = { [weak self] activityID in
-            self?.loadPathFromWorkoutWith(activityID: activityID)
+        guard locationService.isUpdateLocationStarted == false else {
+            showErrorMessage(message: "Для просмотра списка тренировок, необходимо закончить тренировку.")
+            return
         }
         
-        destination.didWorkoutDelete = { [weak self] activityID in
-            guard let self = self else { return }
-            
-            if self.currentWorkout?.activityID == activityID {
-                self.configureRoutePath()
-                self.currentWorkout = nil
-            }
-            
-            if self.workoutService.removeBy(workoutID: activityID) {
-                self.trackService.removePathWith(workoutID: activityID)
-                self.workoutCount -= 1
-            }
-        }
-        
-        navigationController?.present(destination, animated: true)
+        onWorkoutList?()
     }
 }
 

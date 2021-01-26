@@ -15,6 +15,8 @@
 		2A7944F125B8F767009899CC /* TrackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944F025B8F767009899CC /* TrackService.swift */; };
 		2A7944F625B8F78C009899CC /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944F525B8F78C009899CC /* LocationService.swift */; };
 		2A79450E25B8FD62009899CC /* WorkoutListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */; };
+		2A79451A25BB3478009899CC /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79451925BB3477009899CC /* User.swift */; };
+		2A79452325BB37CA009899CC /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79452225BB37CA009899CC /* LoginViewController.swift */; };
 		2AC6444725B1E05F00551D44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444625B1E05F00551D44 /* AppDelegate.swift */; };
 		2AC6444925B1E05F00551D44 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444825B1E05F00551D44 /* SceneDelegate.swift */; };
 		2AC6444B25B1E05F00551D44 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444A25B1E05F00551D44 /* MapViewController.swift */; };
@@ -26,6 +28,14 @@
 		2AC6448A25B1FB1600551D44 /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6448925B1FB1600551D44 /* ResultViewController.swift */; };
 		2AC6448F25B1FB4A00551D44 /* ResultViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6448E25B1FB4A00551D44 /* ResultViewCell.swift */; };
 		2AC6449425B1FF4800551D44 /* UIViewController+EXt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */; };
+		2AED5A8425BF3B56005B622F /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5A8325BF3B56005B622F /* UserService.swift */; };
+		2AED5A8925BF5F58005B622F /* Auth.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2AED5A8825BF5F58005B622F /* Auth.storyboard */; };
+		2AED5A9325BF620F005B622F /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5A9225BF620F005B622F /* ApplicationCoordinator.swift */; };
+		2AED5A9825BF62D8005B622F /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5A9725BF62D8005B622F /* BaseCoordinator.swift */; };
+		2AED5AA425BF6B5F005B622F /* AuthCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5AA325BF6B5F005B622F /* AuthCoordinator.swift */; };
+		2AED5AA925BF6CBA005B622F /* Storyboard+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5AA825BF6CBA005B622F /* Storyboard+Ext.swift */; };
+		2AED5AAE25BF6F10005B622F /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5AAD25BF6F10005B622F /* MainCoordinator.swift */; };
+		2AED5AB625BF7A58005B622F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AED5AB525BF7A58005B622F /* RegisterViewController.swift */; };
 		D7A0C9633E64A2245B1A1CC9 /* Pods_RouteTracker_RouteTrackerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D9F52DD33F0F2CB77E351A8 /* Pods_RouteTracker_RouteTrackerUITests.framework */; };
 		E8B44A761E171BEE1CE5F246 /* Pods_RouteTrackerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846F0D26B101B312F8AE5A63 /* Pods_RouteTrackerTests.framework */; };
 /* End PBXBuildFile section */
@@ -58,6 +68,8 @@
 		2A7944F025B8F767009899CC /* TrackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackService.swift; sourceTree = "<group>"; };
 		2A7944F525B8F78C009899CC /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListViewController.swift; sourceTree = "<group>"; };
+		2A79451925BB3477009899CC /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		2A79452225BB37CA009899CC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		2AC6444325B1E05F00551D44 /* RouteTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RouteTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AC6444625B1E05F00551D44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2AC6444825B1E05F00551D44 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -75,6 +87,14 @@
 		2AC6448925B1FB1600551D44 /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
 		2AC6448E25B1FB4A00551D44 /* ResultViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewCell.swift; sourceTree = "<group>"; };
 		2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+EXt.swift"; sourceTree = "<group>"; };
+		2AED5A8325BF3B56005B622F /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		2AED5A8825BF5F58005B622F /* Auth.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Auth.storyboard; sourceTree = "<group>"; };
+		2AED5A9225BF620F005B622F /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
+		2AED5A9725BF62D8005B622F /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
+		2AED5AA325BF6B5F005B622F /* AuthCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCoordinator.swift; sourceTree = "<group>"; };
+		2AED5AA825BF6CBA005B622F /* Storyboard+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storyboard+Ext.swift"; sourceTree = "<group>"; };
+		2AED5AAD25BF6F10005B622F /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
+		2AED5AB525BF7A58005B622F /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		3D9F52DD33F0F2CB77E351A8 /* Pods_RouteTracker_RouteTrackerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RouteTracker_RouteTrackerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CD75282DC1EE36E41E56748 /* Pods-RouteTracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RouteTracker.release.xcconfig"; path = "Target Support Files/Pods-RouteTracker/Pods-RouteTracker.release.xcconfig"; sourceTree = "<group>"; };
 		72D5353D791A5A47CDB41F6C /* Pods-RouteTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RouteTracker.debug.xcconfig"; path = "Target Support Files/Pods-RouteTracker/Pods-RouteTracker.debug.xcconfig"; sourceTree = "<group>"; };
@@ -114,6 +134,8 @@
 		2A7944C125B8F070009899CC /* BusinessLogic */ = {
 			isa = PBXGroup;
 			children = (
+				2AED5A9F25BF63C4005B622F /* Navigation */,
+				2AED5A8225BF3B07005B622F /* User */,
 				2A7944D625B8F643009899CC /* Workout */,
 			);
 			path = BusinessLogic;
@@ -122,6 +144,7 @@
 		2A7944C225B8F0A7009899CC /* Entity */ = {
 			isa = PBXGroup;
 			children = (
+				2A79451825BB3460009899CC /* User */,
 				2A7944D725B8F64C009899CC /* Workout */,
 			);
 			path = Entity;
@@ -160,6 +183,23 @@
 				2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */,
 			);
 			path = Workout;
+			sourceTree = "<group>";
+		};
+		2A79451825BB3460009899CC /* User */ = {
+			isa = PBXGroup;
+			children = (
+				2A79451925BB3477009899CC /* User.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		2A79451E25BB37AE009899CC /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				2A79452225BB37CA009899CC /* LoginViewController.swift */,
+				2AED5AB525BF7A58005B622F /* RegisterViewController.swift */,
+			);
+			path = Auth;
 			sourceTree = "<group>";
 		};
 		2AC6443A25B1E05F00551D44 = {
@@ -228,6 +268,7 @@
 		2AC644A025B2F6F400551D44 /* Flows */ = {
 			isa = PBXGroup;
 			children = (
+				2A79451E25BB37AE009899CC /* Auth */,
 				2A79450C25B8FD46009899CC /* Workout */,
 				2AC644A425B2F7AA00551D44 /* Map */,
 			);
@@ -247,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */,
+				2AED5AA825BF6CBA005B622F /* Storyboard+Ext.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -254,6 +296,7 @@
 		2AC644A325B2F75D00551D44 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2AED5A8825BF5F58005B622F /* Auth.storyboard */,
 				2AC6444C25B1E05F00551D44 /* Main.storyboard */,
 				2AC6445125B1E06200551D44 /* LaunchScreen.storyboard */,
 				2AC6444F25B1E06200551D44 /* Assets.xcassets */,
@@ -277,6 +320,25 @@
 				2AC6445425B1E06200551D44 /* Info.plist */,
 			);
 			path = Environments;
+			sourceTree = "<group>";
+		};
+		2AED5A8225BF3B07005B622F /* User */ = {
+			isa = PBXGroup;
+			children = (
+				2AED5A8325BF3B56005B622F /* UserService.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		2AED5A9F25BF63C4005B622F /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				2AED5A9225BF620F005B622F /* ApplicationCoordinator.swift */,
+				2AED5A9725BF62D8005B622F /* BaseCoordinator.swift */,
+				2AED5AA325BF6B5F005B622F /* AuthCoordinator.swift */,
+				2AED5AAD25BF6F10005B622F /* MainCoordinator.swift */,
+			);
+			path = Navigation;
 			sourceTree = "<group>";
 		};
 		548F712A6497FDD6ED080122 /* Frameworks */ = {
@@ -412,6 +474,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AED5A8925BF5F58005B622F /* Auth.storyboard in Resources */,
 				2AC6445325B1E06200551D44 /* LaunchScreen.storyboard in Resources */,
 				2AC6445025B1E06200551D44 /* Assets.xcassets in Resources */,
 				2AC6444E25B1E05F00551D44 /* Main.storyboard in Resources */,
@@ -577,15 +640,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AC6449425B1FF4800551D44 /* UIViewController+EXt.swift in Sources */,
+				2AED5AB625BF7A58005B622F /* RegisterViewController.swift in Sources */,
 				2AC6448F25B1FB4A00551D44 /* ResultViewCell.swift in Sources */,
 				2A7944C425B8F11F009899CC /* RealmService.swift in Sources */,
+				2A79452325BB37CA009899CC /* LoginViewController.swift in Sources */,
 				2A7944D925B8F69F009899CC /* WorkoutService.swift in Sources */,
+				2AED5AAE25BF6F10005B622F /* MainCoordinator.swift in Sources */,
+				2AED5A9325BF620F005B622F /* ApplicationCoordinator.swift in Sources */,
 				2A79450E25B8FD62009899CC /* WorkoutListViewController.swift in Sources */,
+				2AED5AA925BF6CBA005B622F /* Storyboard+Ext.swift in Sources */,
 				2AC6444B25B1E05F00551D44 /* MapViewController.swift in Sources */,
+				2A79451A25BB3478009899CC /* User.swift in Sources */,
+				2AED5AA425BF6B5F005B622F /* AuthCoordinator.swift in Sources */,
 				2A7944E125B8F6E0009899CC /* Workout.swift in Sources */,
 				2AC6444725B1E05F00551D44 /* AppDelegate.swift in Sources */,
 				2A7944F125B8F767009899CC /* TrackService.swift in Sources */,
 				2AC6444925B1E05F00551D44 /* SceneDelegate.swift in Sources */,
+				2AED5A8425BF3B56005B622F /* UserService.swift in Sources */,
+				2AED5A9825BF62D8005B622F /* BaseCoordinator.swift in Sources */,
 				2A7944E625B8F73B009899CC /* Path.swift in Sources */,
 				2A7944F625B8F78C009899CC /* LocationService.swift in Sources */,
 				2AC6448A25B1FB1600551D44 /* ResultViewController.swift in Sources */,

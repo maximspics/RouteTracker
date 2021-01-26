@@ -47,7 +47,6 @@ extension WorkoutListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let workout = workouts?[indexPath.row] {
             didWorkoutSelect?(workout.activityID)
-            tableView.reloadData()
         }
         
         dismiss(animated: true)
@@ -73,11 +72,18 @@ extension WorkoutListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "workoutCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WorkoutViewCell", for: indexPath)
         
         if let workout = workouts?[indexPath.row] {
-            cell.textLabel?.text = workout.title + " " + dateFormatter.string(from: workout.timestamp)
-            cell.detailTextLabel?.text = "Время тренировки: " + workout.timeTotal
+            
+            let totalSeconds = workout.secondsTotal % 60
+            let totalMinutes = workout.secondsTotal / 60 % 60
+            let totalHours = workout.secondsTotal / 3600
+            
+            var timeTotal: String { (totalHours == 0 ? "" : String(totalHours) + " ч. ") + (totalMinutes == 0 ? "" : String(totalMinutes) + " мин. ") + String(totalSeconds) + " сек." }
+            
+            cell.textLabel?.text = workout.title + " " + dateFormatter.string(from: workout.date)
+            cell.detailTextLabel?.text = "Время: " + timeTotal + " Дистанция: \(String(Int(workout.pathLenght))) метров."
         }
 
         return cell

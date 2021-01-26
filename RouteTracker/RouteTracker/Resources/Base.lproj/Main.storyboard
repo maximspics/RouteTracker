@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Xun-4F-fb2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
@@ -13,15 +13,25 @@
         <!--Карта-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MapViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" id="BYZ-38-t0r" customClass="MapViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NmP-VA-dkh" customClass="GMSMapView">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ky8-gA-hqj">
+                                <rect key="frame" x="189.5" y="431" width="35.5" height="34"/>
+                                <color key="backgroundColor" systemColor="systemYellowColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="zlS-AN-KB7"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ywR-QE-lQ8">
                                 <rect key="frame" x="339" y="737" width="50" height="50"/>
                                 <color key="backgroundColor" red="0.1803921568627451" green="0.63921568627450975" blue="1" alpha="0.94999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
@@ -133,6 +143,7 @@
                             <constraint firstItem="zko-4e-3Fe" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="25" id="7dl-gy-LKL"/>
                             <constraint firstItem="tbR-hZ-OCC" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="25" id="DCq-KV-Rv3"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="NmP-VA-dkh" secondAttribute="trailing" id="FCM-LW-FQb"/>
+                            <constraint firstItem="ky8-gA-hqj" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="IIC-eL-d44"/>
                             <constraint firstItem="ywR-QE-lQ8" firstAttribute="leading" secondItem="zko-4e-3Fe" secondAttribute="trailing" constant="5" id="Kbw-BY-YH1"/>
                             <constraint firstItem="NmP-VA-dkh" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Kca-eW-duu"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ywR-QE-lQ8" secondAttribute="trailing" constant="25" id="L1c-n7-Il7"/>
@@ -143,13 +154,14 @@
                             <constraint firstItem="tbR-hZ-OCC" firstAttribute="top" secondItem="ywR-QE-lQ8" secondAttribute="bottom" constant="25" id="aFN-RQ-My5"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="tbR-hZ-OCC" secondAttribute="bottom" id="dPJ-hm-5DC"/>
                             <constraint firstItem="zko-4e-3Fe" firstAttribute="top" secondItem="8m9-yH-cBP" secondAttribute="bottom" constant="25" id="duo-gz-Sqw"/>
+                            <constraint firstItem="ky8-gA-hqj" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mye-JS-9F6"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="tbR-hZ-OCC" secondAttribute="trailing" constant="25" id="urR-0K-yIe"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Карта" id="Kfq-nY-fU4">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="mappin.and.ellipse" catalog="system" id="a2a-zr-2XR">
+                        <barButtonItem key="leftBarButtonItem" title="Выйти" id="a2a-zr-2XR">
                             <connections>
-                                <action selector="btnAddMarkerClicked:" destination="BYZ-38-t0r" id="Onx-Xn-t6B"/>
+                                <action selector="btnLogoutClicked:" destination="BYZ-38-t0r" id="Onx-Xn-t6B"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Item" image="house" catalog="system" id="EAL-tS-tNJ">
@@ -163,6 +175,7 @@
                         <outlet property="btnStartDetection" destination="zko-4e-3Fe" id="k4m-V8-klH"/>
                         <outlet property="btnTrafficOnOff" destination="3We-x4-p2R" id="5n5-yl-ZYR"/>
                         <outlet property="btnWorkoutList" destination="ywR-QE-lQ8" id="F0B-80-0fS"/>
+                        <outlet property="lblWelcomeMessage" destination="ky8-gA-hqj" id="rJn-6t-Cb3"/>
                         <outlet property="mapType" destination="tbR-hZ-OCC" id="WuT-8q-55K"/>
                         <outlet property="mapView" destination="NmP-VA-dkh" id="6t3-TR-fME"/>
                         <outlet property="zoomIn" destination="768-Rf-8AF" id="ZzL-hn-wYS"/>
@@ -180,7 +193,7 @@
         <!--Result View Controller-->
         <scene sceneID="MRp-wN-8VV">
             <objects>
-                <viewController storyboardIdentifier="resultViewController" id="goO-aQ-lgd" customClass="ResultViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ResultViewController" id="goO-aQ-lgd" customClass="ResultViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5Oy-Rj-VYB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -189,7 +202,7 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="resultCell" textLabel="3pE-Je-MQx" detailTextLabel="rFk-OD-mwK" rowHeight="82" style="IBUITableViewCellStyleSubtitle" id="afR-Ac-qKx" customClass="ResultViewCell" customModule="RouteTracker" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ResultViewCell" textLabel="3pE-Je-MQx" detailTextLabel="rFk-OD-mwK" rowHeight="82" style="IBUITableViewCellStyleSubtitle" id="afR-Ac-qKx" customClass="ResultViewCell" customModule="RouteTracker" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="82"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="afR-Ac-qKx" id="Oih-tZ-ShA">
@@ -233,28 +246,10 @@
             </objects>
             <point key="canvasLocation" x="1772" y="94"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="pjF-h2-CrF">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Xun-4F-fb2" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ogy-fV-tnJ">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="fcn-cI-noy"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="GsT-dh-3w8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="18.840579710144929" y="93.75"/>
-        </scene>
         <!--Workout List View Controller-->
         <scene sceneID="MwY-Kr-USh">
             <objects>
-                <viewController storyboardIdentifier="workoutListController" id="psb-x4-ZWm" customClass="WorkoutListViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WorkoutListViewController" id="psb-x4-ZWm" customClass="WorkoutListViewController" customModule="RouteTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DL0-hn-q1w">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -263,7 +258,7 @@
                                 <rect key="frame" x="0.0" y="81" width="414" height="781"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="workoutCell" textLabel="VpV-dw-rYq" detailTextLabel="EXP-3Z-tFW" rowHeight="82" style="IBUITableViewCellStyleSubtitle" id="8ef-Rp-E01">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WorkoutViewCell" textLabel="VpV-dw-rYq" detailTextLabel="EXP-3Z-tFW" rowHeight="82" style="IBUITableViewCellStyleSubtitle" id="8ef-Rp-E01">
                                         <rect key="frame" x="0.0" y="28" width="414" height="82"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8ef-Rp-E01" id="MDr-Aq-0ci">
@@ -322,12 +317,17 @@
         <image name="house" catalog="system" width="128" height="106"/>
         <image name="list.bullet" catalog="system" width="128" height="88"/>
         <image name="location" catalog="system" width="128" height="121"/>
-        <image name="mappin.and.ellipse" catalog="system" width="118" height="128"/>
         <image name="minus.magnifyingglass" catalog="system" width="128" height="115"/>
         <image name="plus.magnifyingglass" catalog="system" width="128" height="115"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemYellowColor">
+            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -10,37 +10,27 @@ import RealmSwift
 
 class WorkoutService: NSObject {
     private var realm = RealmService.shared
-    var sec = 0
-    var timer: Timer?
-    var hours: Int?
-    var minutes: Int?
-    var seconds: Int?
     var currentWorkout: Workout?
-    var uuid: String?
-    
-    @objc func timePassed() {
-        sec += 1
-        hours = sec / 3600
-        minutes = sec / 60 % 60
-        seconds = sec % 60
-    }
     
     func start() -> Workout? {
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timePassed), userInfo: nil, repeats: true)
-        uuid = UUID().uuidString
-        currentWorkout = Workout(activityID: uuid, title: nil, totalHours: nil, totalMinutes: nil, totalSeconds: nil)
-        guard let currentWorkout = currentWorkout else { return nil }
+        let currentWorkout = Workout()
         try? realm.save(items: currentWorkout)
+        self.currentWorkout = currentWorkout
         return currentWorkout
     }
     
-    func stop() -> Workout? {
-        timer?.invalidate()
-        currentWorkout = Workout(activityID: uuid, title: nil, totalHours: hours, totalMinutes: minutes, totalSeconds: seconds)
-        guard let currentWorkout = currentWorkout else { return nil }
-        try? realm.save(items: currentWorkout)
-        sec = 0
-        return currentWorkout
+    func stop(distance: Double?) {
+        if let currentWorkout = currentWorkout {
+            let startTime = currentWorkout.date.timeIntervalSince1970
+            let endTime = Date().timeIntervalSince1970
+            
+            try? realm.realm?.write {
+                currentWorkout.secondsTotal = Int(endTime) - Int(startTime)
+                currentWorkout.pathLenght = distance ?? 0
+            }
+            
+            self.currentWorkout = nil
+        }
     }
     
     func list() -> [Workout]? {

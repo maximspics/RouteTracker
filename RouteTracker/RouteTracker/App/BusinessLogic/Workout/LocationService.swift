@@ -35,6 +35,7 @@ class LocationService: NSObject {
     }
     
     private(set) var isUpdateLocationStarted: Bool = false
+    private(set) var firstKnownLocation: CLLocationCoordinate2D?
     private(set) var lastKnownLocation: CLLocationCoordinate2D?
     
     override init() {
@@ -42,21 +43,29 @@ class LocationService: NSObject {
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager = CLLocationManager()
+            locationManager?.delegate = self
             locationManager?.requestAlwaysAuthorization()
             locationManager?.allowsBackgroundLocationUpdates = true
             locationManager?.pausesLocationUpdatesAutomatically = false
-            locationManager?.delegate = self
+            locationManager?.startMonitoringSignificantLocationChanges()
+            locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         }
         
     }
     
     func start() {
+        firstKnownLocation = nil
+        lastKnownLocation = nil
+        
         isUpdateLocationStarted = true
         locationManager?.startUpdatingLocation()
         delegate?.willUpdateLocationStarted()
     }
     
     func stop() {
+        firstKnownLocation = nil
+        lastKnownLocation = nil
+        
         isUpdateLocationStarted = false
         locationManager?.stopUpdatingLocation()
         delegate?.willUpdateLocationStopped()
@@ -68,6 +77,10 @@ class LocationService: NSObject {
         }
         
         lastKnownLocation = coordinate
+        
+        if firstKnownLocation == nil {
+            firstKnownLocation = coordinate
+        }
     }
     
     func currentLocation() {

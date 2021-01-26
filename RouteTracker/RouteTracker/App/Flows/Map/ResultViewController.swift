@@ -48,7 +48,7 @@ extension ResultViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "resultCell", for: indexPath) as? ResultViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ResultViewCell", for: indexPath) as? ResultViewCell else {
             preconditionFailure()
         }
         
