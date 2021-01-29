@@ -9,23 +9,23 @@ import UIKit
 
 class LoginViewController: UIViewController {
     // MARK: Outlets
-    @IBOutlet weak var txtLogin: UITextField!
-    @IBOutlet weak var txtPassword: UITextField!
-    @IBOutlet weak var scrollContainer: UIScrollView!
-    @IBOutlet weak var lblErrorMessage: UILabel! {
+    @IBOutlet weak var txtLogin: UITextField! {
         didSet {
-            lblErrorMessage.layer.cornerRadius = 10
-            lblErrorMessage.layer.borderColor = UIColor.systemRed.cgColor
-            lblErrorMessage.layer.borderWidth = 1
-            lblErrorMessage.clipsToBounds = true
-            lblErrorMessage.isHidden = true
+            txtLogin.autocorrectionType = .no
         }
     }
+    @IBOutlet weak var txtPassword: UITextField! {
+        didSet {
+            txtPassword.autocorrectionType = .no
+            txtPassword.isSecureTextEntry = true
+        }
+    }
+    @IBOutlet weak var scrollContainer: UIScrollView!
     
     // MARK: - Properties
-    var onLogin: ((String) -> Void)?
+    var onLogin: (() -> Void)?
     var onRegister: (() -> Void)?
-    var welcomeMessage: ((String) -> Void)?
+    var message: String?
     
     var service = UserService.shared
     
@@ -35,6 +35,7 @@ class LoginViewController: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewClicked(_:)))
         view.addGestureRecognizer(tapGesture)
+        showByeMessage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -55,6 +56,23 @@ class LoginViewController: UIViewController {
     }
     
     // MARK: - Methods
+    func showByeMessage() {
+        guard let message = UserDefaults.standard.string(forKey: "message") else { return }
+        if message != "" {
+            showAlertMessage(message)
+            UserDefaults.standard.set("", forKey: "message")
+        }
+    }
+    
+    func showAlertMessage(_ message: String) {
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        present(alertController, animated: true) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                alertController.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
     @objc func viewClicked(_ sender: UIView) {
         view.endEditing(true)
         scrollViewReset()
@@ -87,38 +105,24 @@ class LoginViewController: UIViewController {
     
     // MARK: - Actions
     @IBAction func btnLoginClicked(_ sender: UIButton) {
-        // Скрываем сообщение об ошибке
-        self.lblErrorMessage.isHidden = true
-        
-        // Проверяем наличие необходимых данных
         guard let login = txtLogin.text, login.isEmpty == false,
-            let password = txtPassword.text, password.isEmpty == false else {
-                return
+              let password = txtPassword.text, password.isEmpty == false else {
+            showAlertMessage("Необходимо ввести логин и пароль!")
+            return
         }
         
-        // Проверяем пользователя
-        guard service.isUserExistBy(login: login, password: password) == true else {
-            self.lblErrorMessage.layer.opacity = 0
-            self.lblErrorMessage.isHidden = false
-            
-            // Моргнем плашкой об ошибке
-            UIView.animate(withDuration: 2, animations: {
-                self.lblErrorMessage.layer.opacity = 1
-            }, completion: { _ in
-                UIView.animate(withDuration: 2) {
-                    self.lblErrorMessage.layer.opacity = 0
-                }
-            })
-            
-            
+        guard service.isUserExistWith(login: login, password: password) == true,
+              let user = service.getUserBy(login: login, password: password)?.first else {
+            showAlertMessage("Пользователь с таким логином и паролем не найден!")
             return
-        
         }
         
         UserDefaults.standard.set(true, forKey: "isLogin")
-        let firstName = String(service.getUserBy(login: login, password: password)?.first?.firstName ?? "")
-        let message = "\(firstName), мы рады снова тебя видеть!"
-        onLogin?(message)
+        UserDefaults.standard.set(user.firstName, forKey: "firstName")
+        UserDefaults.standard.set(user.login, forKey: "userLogin")
+        let message = "\(user.firstName)!\nВы успешно авторизованы!"
+        UserDefaults.standard.set(message, forKey: "message")
+        onLogin?()
     }
     
     @IBAction func btnRegisterClicked(_ sender: Any) {

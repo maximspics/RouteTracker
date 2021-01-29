@@ -8,26 +8,32 @@
 import UIKit
 
 class RegisterViewController: UIViewController {
-    @IBOutlet weak var lblErrorMessage: UILabel! {
+    // MARK: - Outlets
+    @IBOutlet weak var txtLogin: UITextField! {
         didSet {
-            lblErrorMessage.layer.cornerRadius = 10
-            lblErrorMessage.layer.borderWidth = 1
-            lblErrorMessage.layer.borderColor = UIColor.systemRed.cgColor
-            lblErrorMessage.isHidden = true
-            lblErrorMessage.text = ""
+            txtLogin.autocorrectionType = .no
         }
     }
-    
-    @IBOutlet weak var txtLogin: UITextField!
-    @IBOutlet weak var txtPassword: UITextField!
-    @IBOutlet weak var txtNewPassword: UITextField!
+    @IBOutlet weak var txtPassword: UITextField! {
+        didSet {
+            txtPassword.autocorrectionType = .no
+            txtPassword.isSecureTextEntry = true
+        }
+    }
+    @IBOutlet weak var txtNewPassword: UITextField! {
+        didSet {
+            txtNewPassword.autocorrectionType = .no
+            txtNewPassword.isSecureTextEntry = true
+        }
+    }
     @IBOutlet weak var txtFirstName: UITextField!
     @IBOutlet weak var txtLastName: UITextField!
     
+    // MARK: - Properties
     let service = UserService.shared
     var onRegistrationDone: (() -> Void)?
-    var firstName: String?
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,39 +44,35 @@ class RegisterViewController: UIViewController {
         self.view.addGestureRecognizer(touchGuesture)
     }
     
+    // MARK: - Methods
+    func showAlertMessage(_ message: String) {
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        present(alertController, animated: true) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                alertController.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
     @objc
     private func onViewClick() {
         self.view.endEditing(true)
     }
     
-    private func showFormError(message: String) {
-        lblErrorMessage.layer.opacity = 0
-        lblErrorMessage.isHidden = false
-        lblErrorMessage.text = message
-        
-        UIView.animate(withDuration: 2, animations: {
-            self.lblErrorMessage.layer.opacity = 1
-        }, completion: { _ in
-            UIView.animate(withDuration: 5) {
-                self.lblErrorMessage.layer.opacity = 0
-            }
-        })
-    }
-    
+    // MARK: - Actions
     @IBAction func btnRegisterClicked(_ sender: Any) {
-        // Проверим все необходимые данные
+        
         guard let login = txtLogin.text, login.isEmpty == false,
             let password = txtPassword.text, password.isEmpty == false,
             let newPassword = txtNewPassword.text, newPassword.isEmpty == false,
             let firstName = txtFirstName.text, firstName.isEmpty == false,
             let lastName = txtLastName.text, lastName.isEmpty == false else {
-                showFormError(message: "Все поля формы обязательны")
+                showAlertMessage("Все поля формы обязательны")
                 return
         }
         
-        // также проверим совпадают ли пароли
         guard password == newPassword else {
-            showFormError(message: "Пароли не совпадают")
+            showAlertMessage("Пароли не совпадают")
             return
         }
         
@@ -81,20 +83,23 @@ class RegisterViewController: UIViewController {
                                             lastName: lastName))
             
             UserDefaults.standard.set(true, forKey: "isLogin")
-            self.firstName = firstName
+            UserDefaults.standard.set(firstName, forKey: "firstName")
+            let message = "\(firstName)!\nВы успешно зарегистрированы!"
+            UserDefaults.standard.set(message, forKey: "message")
+            UserDefaults.standard.set(login, forKey: "userLogin")
             onRegistrationDone?()
             
         } catch let error {
             if let error = error as? RegisterError {
                 switch error {
                 case .userFound:
-                    showFormError(message: "Такой пользовтаель уже есть")
+                    showAlertMessage("Такой пользователь уже есть")
                 default:
-                    showFormError(message: "Ошибка регистрации пользователя")
+                    showAlertMessage("Ошибка регистрации пользователя")
                 }
                 
             } else {
-                showFormError(message: "Ошибка регистрации пользователя")
+                showAlertMessage("Ошибка регистрации пользователя")
             }
         }
     }

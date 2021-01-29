@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		24C3F71CAF817965251AA22C /* Pods_RouteTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018AEB29584DCADBC437E990 /* Pods_RouteTracker.framework */; };
+		2A22F90125C2E44800B60258 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F90025C2E44800B60258 /* UIView+Ext.swift */; };
+		2A22F90B25C2F88400B60258 /* WorkoutDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F90A25C2F88400B60258 /* WorkoutDetailViewController.swift */; };
+		2A22F93B25C4333100B60258 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F93A25C4333100B60258 /* AppManager.swift */; };
 		2A7944C425B8F11F009899CC /* RealmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944C325B8F11F009899CC /* RealmService.swift */; };
 		2A7944D925B8F69F009899CC /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944D825B8F69F009899CC /* WorkoutService.swift */; };
 		2A7944E125B8F6E0009899CC /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944E025B8F6E0009899CC /* Workout.swift */; };
@@ -61,6 +64,9 @@
 		018AEB29584DCADBC437E990 /* Pods_RouteTracker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RouteTracker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		255DADBD723C43F6C62DAC7E /* Pods-RouteTrackerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RouteTrackerTests.debug.xcconfig"; path = "Target Support Files/Pods-RouteTrackerTests/Pods-RouteTrackerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2624168313B8748155E29344 /* Pods-RouteTracker-RouteTrackerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RouteTracker-RouteTrackerUITests.release.xcconfig"; path = "Target Support Files/Pods-RouteTracker-RouteTrackerUITests/Pods-RouteTracker-RouteTrackerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		2A22F90025C2E44800B60258 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
+		2A22F90A25C2F88400B60258 /* WorkoutDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDetailViewController.swift; sourceTree = "<group>"; };
+		2A22F93A25C4333100B60258 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		2A7944C325B8F11F009899CC /* RealmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmService.swift; sourceTree = "<group>"; };
 		2A7944D825B8F69F009899CC /* WorkoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutService.swift; sourceTree = "<group>"; };
 		2A7944E025B8F6E0009899CC /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
@@ -131,6 +137,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A22F93925C4331700B60258 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				2A22F93A25C4333100B60258 /* AppManager.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
 		2A7944C125B8F070009899CC /* BusinessLogic */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,9 +175,9 @@
 		2A7944D625B8F643009899CC /* Workout */ = {
 			isa = PBXGroup;
 			children = (
+				2A7944F525B8F78C009899CC /* LocationService.swift */,
 				2A7944D825B8F69F009899CC /* WorkoutService.swift */,
 				2A7944F025B8F767009899CC /* TrackService.swift */,
-				2A7944F525B8F78C009899CC /* LocationService.swift */,
 			);
 			path = Workout;
 			sourceTree = "<group>";
@@ -181,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */,
+				2A22F90A25C2F88400B60258 /* WorkoutDetailViewController.swift */,
 			);
 			path = Workout;
 			sourceTree = "<group>";
@@ -278,6 +293,7 @@
 		2AC644A125B2F70500551D44 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				2A22F93925C4331700B60258 /* Application */,
 				2A7944D525B8F623009899CC /* Services */,
 				2AC644A225B2F70C00551D44 /* Helpers */,
 			);
@@ -289,6 +305,7 @@
 			children = (
 				2AC6449325B1FF4800551D44 /* UIViewController+EXt.swift */,
 				2AED5AA825BF6CBA005B622F /* Storyboard+Ext.swift */,
+				2A22F90025C2E44800B60258 /* UIView+Ext.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -639,6 +656,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A22F90B25C2F88400B60258 /* WorkoutDetailViewController.swift in Sources */,
+				2A22F93B25C4333100B60258 /* AppManager.swift in Sources */,
 				2AC6449425B1FF4800551D44 /* UIViewController+EXt.swift in Sources */,
 				2AED5AB625BF7A58005B622F /* RegisterViewController.swift in Sources */,
 				2AC6448F25B1FB4A00551D44 /* ResultViewCell.swift in Sources */,
@@ -651,6 +670,7 @@
 				2AED5AA925BF6CBA005B622F /* Storyboard+Ext.swift in Sources */,
 				2AC6444B25B1E05F00551D44 /* MapViewController.swift in Sources */,
 				2A79451A25BB3478009899CC /* User.swift in Sources */,
+				2A22F90125C2E44800B60258 /* UIView+Ext.swift in Sources */,
 				2AED5AA425BF6B5F005B622F /* AuthCoordinator.swift in Sources */,
 				2A7944E125B8F6E0009899CC /* Workout.swift in Sources */,
 				2AC6444725B1E05F00551D44 /* AppDelegate.swift in Sources */,

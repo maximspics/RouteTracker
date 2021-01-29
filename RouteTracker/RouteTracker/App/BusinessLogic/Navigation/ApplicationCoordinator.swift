@@ -9,6 +9,8 @@ import Foundation
 
 final class ApplicationCoordinator: BaseCoordinator {
     
+    var mapViewController: MapViewController?
+    
     override func start() {
         if UserDefaults.standard.bool(forKey: "isLogin") {
             toMain()
@@ -37,7 +39,7 @@ final class ApplicationCoordinator: BaseCoordinator {
         // Создаём координатор сценария авторизации
         let coordinator = AuthCoordinator()
         // Устанавливаем ему поведение на завершение
-        coordinator.onFinishFlow = { [weak self, weak coordinator] in
+        coordinator.onFinishFlow = { [weak self, weak coordinator]  in
             // Так как подсценарий завершился, держать его в памяти больше не нужно
             self?.removeDependency(coordinator)
             // Заново запустим главный координатор, чтобы выбрать выбрать следующий

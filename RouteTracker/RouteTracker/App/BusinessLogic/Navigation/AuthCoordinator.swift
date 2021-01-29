@@ -11,8 +11,8 @@ import UIKit
 final class AuthCoordinator: BaseCoordinator {
     
     var rootController: UINavigationController?
-    var mapViewController: MapViewController?
     var onFinishFlow: (() -> Void)?
+    var mapViewController: MapViewController?
     
     override func start() {
         showLoginModule()
@@ -26,7 +26,7 @@ final class AuthCoordinator: BaseCoordinator {
             self?.showRegisterModule()
         }
         
-        controller.onLogin = { [weak self] (message: String) in
+        controller.onLogin = { [weak self] in
             self?.onFinishFlow?()
         }
         
@@ -39,9 +39,10 @@ final class AuthCoordinator: BaseCoordinator {
         let controller = UIStoryboard(name: "Auth", bundle: nil)
             .instantiateViewController(RegisterViewController.self)
         
-        controller.onRegistrationDone = { [weak self] in
+        controller.onRegistrationDone = { [weak self]  in
             self?.onFinishFlow?()
         }
+        
         rootController?.pushViewController(controller, animated: true)
     }
     

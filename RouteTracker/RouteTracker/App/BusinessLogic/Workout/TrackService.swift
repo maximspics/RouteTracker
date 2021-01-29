@@ -32,7 +32,7 @@ class TrackService: NSObject {
         }
     }
     
-    func listBy(workoutID: String) -> [Path]? {
+    func list(workoutID: String) -> [Path]? {
         guard let trackList = service.get(Path.self)?
                 .filter("activityID == '\(workoutID)'")
                 .sorted(byKeyPath: "date", ascending: true) else {

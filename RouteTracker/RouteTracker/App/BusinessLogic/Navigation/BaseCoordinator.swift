@@ -12,9 +12,7 @@ class BaseCoordinator {
     
     var childCoordinators: [BaseCoordinator] = []
     
-    func start() {
-        
-    }
+    func start() { }
     
     func addDependency(_ coordinator: BaseCoordinator) {
         for element in childCoordinators where element === coordinator {
@@ -32,6 +30,15 @@ class BaseCoordinator {
         for (index, element) in childCoordinators.reversed().enumerated() where element === coordinator {
             childCoordinators.remove(at: index)
             break
+        }
+    }
+    
+    func getRootViewController() -> UIViewController? {
+        if #available(iOS 13, *) {
+            let scenedelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+            return scenedelegate?.window?.rootViewController
+        } else {
+            return UIApplication.shared.keyWindow?.rootViewController
         }
     }
     

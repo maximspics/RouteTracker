@@ -17,7 +17,7 @@ final class UserService {
     static var shared = UserService()
     let realm = RealmService.shared
     
-    func isUserExistBy(login: String, password: String) -> Bool {
+    func isUserExistWith(login: String, password: String) -> Bool {
         guard realm.get(User.self)?
             .filter("login = '\(login)' AND password = '\(password)'").count == 0 else {
                 return true
@@ -36,7 +36,7 @@ final class UserService {
     }
     
     func register(user: User) throws {
-        guard isUserExistBy(login: user.login, password: user.password) == false else {
+        guard isUserExistWith(login: user.login, password: user.password) == false else {
                 throw RegisterError.userFound
         }
         

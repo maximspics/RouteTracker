@@ -34,7 +34,7 @@ class LocationService: NSObject {
         return true
     }
     
-    private(set) var isUpdateLocationStarted: Bool = false
+    private(set) var isWorkoutStarted: Bool = false
     private(set) var firstKnownLocation: CLLocationCoordinate2D?
     private(set) var lastKnownLocation: CLLocationCoordinate2D?
     
@@ -57,7 +57,7 @@ class LocationService: NSObject {
         firstKnownLocation = nil
         lastKnownLocation = nil
         
-        isUpdateLocationStarted = true
+        isWorkoutStarted = true
         locationManager?.startUpdatingLocation()
         delegate?.willUpdateLocationStarted()
     }
@@ -66,7 +66,7 @@ class LocationService: NSObject {
         firstKnownLocation = nil
         lastKnownLocation = nil
         
-        isUpdateLocationStarted = false
+        isWorkoutStarted = false
         locationManager?.stopUpdatingLocation()
         delegate?.willUpdateLocationStopped()
     }
