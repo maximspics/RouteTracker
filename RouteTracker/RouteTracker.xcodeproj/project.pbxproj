@@ -16,10 +16,15 @@
 		2A7944E125B8F6E0009899CC /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944E025B8F6E0009899CC /* Workout.swift */; };
 		2A7944E625B8F73B009899CC /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944E525B8F73B009899CC /* Path.swift */; };
 		2A7944F125B8F767009899CC /* TrackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944F025B8F767009899CC /* TrackService.swift */; };
-		2A7944F625B8F78C009899CC /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944F525B8F78C009899CC /* LocationService.swift */; };
+		2A7944F625B8F78C009899CC /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944F525B8F78C009899CC /* LocationManager.swift */; };
 		2A79450E25B8FD62009899CC /* WorkoutListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */; };
 		2A79451A25BB3478009899CC /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79451925BB3477009899CC /* User.swift */; };
 		2A79452325BB37CA009899CC /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A79452225BB37CA009899CC /* LoginViewController.swift */; };
+		2ABA870B25CC6AE8001AB4F9 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABA870A25CC6AE8001AB4F9 /* Observable.swift */; };
+		2ABEABF225C895C700469F47 /* TransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEABF125C895C700469F47 /* TransitioningDelegate.swift */; };
+		2ABEABF725C8960800469F47 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEABF625C8960800469F47 /* PresentationController.swift */; };
+		2ABEABFC25C8964000469F47 /* PresentAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEABFB25C8964000469F47 /* PresentAnimatedTransitioning.swift */; };
+		2ABEAC0125C896ED00469F47 /* DismissAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABEAC0025C896ED00469F47 /* DismissAnimatedTransitioning.swift */; };
 		2AC6444725B1E05F00551D44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444625B1E05F00551D44 /* AppDelegate.swift */; };
 		2AC6444925B1E05F00551D44 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444825B1E05F00551D44 /* SceneDelegate.swift */; };
 		2AC6444B25B1E05F00551D44 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC6444A25B1E05F00551D44 /* MapViewController.swift */; };
@@ -72,10 +77,15 @@
 		2A7944E025B8F6E0009899CC /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
 		2A7944E525B8F73B009899CC /* Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
 		2A7944F025B8F767009899CC /* TrackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackService.swift; sourceTree = "<group>"; };
-		2A7944F525B8F78C009899CC /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		2A7944F525B8F78C009899CC /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2A79450D25B8FD62009899CC /* WorkoutListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListViewController.swift; sourceTree = "<group>"; };
 		2A79451925BB3477009899CC /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2A79452225BB37CA009899CC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		2ABA870A25CC6AE8001AB4F9 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
+		2ABEABF125C895C700469F47 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
+		2ABEABF625C8960800469F47 /* PresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
+		2ABEABFB25C8964000469F47 /* PresentAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentAnimatedTransitioning.swift; sourceTree = "<group>"; };
+		2ABEAC0025C896ED00469F47 /* DismissAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		2AC6444325B1E05F00551D44 /* RouteTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RouteTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AC6444625B1E05F00551D44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2AC6444825B1E05F00551D44 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -175,7 +185,7 @@
 		2A7944D625B8F643009899CC /* Workout */ = {
 			isa = PBXGroup;
 			children = (
-				2A7944F525B8F78C009899CC /* LocationService.swift */,
+				2A7944F525B8F78C009899CC /* LocationManager.swift */,
 				2A7944D825B8F69F009899CC /* WorkoutService.swift */,
 				2A7944F025B8F767009899CC /* TrackService.swift */,
 			);
@@ -215,6 +225,25 @@
 				2AED5AB525BF7A58005B622F /* RegisterViewController.swift */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		2ABA870925CC6ACB001AB4F9 /* Observable */ = {
+			isa = PBXGroup;
+			children = (
+				2ABA870A25CC6AE8001AB4F9 /* Observable.swift */,
+			);
+			path = Observable;
+			sourceTree = "<group>";
+		};
+		2ABEABD725C7243000469F47 /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				2ABEABF125C895C700469F47 /* TransitioningDelegate.swift */,
+				2ABEABF625C8960800469F47 /* PresentationController.swift */,
+				2ABEABFB25C8964000469F47 /* PresentAnimatedTransitioning.swift */,
+				2ABEAC0025C896ED00469F47 /* DismissAnimatedTransitioning.swift */,
+			);
+			path = Animation;
 			sourceTree = "<group>";
 		};
 		2AC6443A25B1E05F00551D44 = {
@@ -293,6 +322,7 @@
 		2AC644A125B2F70500551D44 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				2ABA870925CC6ACB001AB4F9 /* Observable */,
 				2A22F93925C4331700B60258 /* Application */,
 				2A7944D525B8F623009899CC /* Services */,
 				2AC644A225B2F70C00551D44 /* Helpers */,
@@ -350,6 +380,7 @@
 		2AED5A9F25BF63C4005B622F /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				2ABEABD725C7243000469F47 /* Animation */,
 				2AED5A9225BF620F005B622F /* ApplicationCoordinator.swift */,
 				2AED5A9725BF62D8005B622F /* BaseCoordinator.swift */,
 				2AED5AA325BF6B5F005B622F /* AuthCoordinator.swift */,
@@ -657,6 +688,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A22F90B25C2F88400B60258 /* WorkoutDetailViewController.swift in Sources */,
+				2ABEABFC25C8964000469F47 /* PresentAnimatedTransitioning.swift in Sources */,
 				2A22F93B25C4333100B60258 /* AppManager.swift in Sources */,
 				2AC6449425B1FF4800551D44 /* UIViewController+EXt.swift in Sources */,
 				2AED5AB625BF7A58005B622F /* RegisterViewController.swift in Sources */,
@@ -671,15 +703,19 @@
 				2AC6444B25B1E05F00551D44 /* MapViewController.swift in Sources */,
 				2A79451A25BB3478009899CC /* User.swift in Sources */,
 				2A22F90125C2E44800B60258 /* UIView+Ext.swift in Sources */,
+				2ABA870B25CC6AE8001AB4F9 /* Observable.swift in Sources */,
 				2AED5AA425BF6B5F005B622F /* AuthCoordinator.swift in Sources */,
 				2A7944E125B8F6E0009899CC /* Workout.swift in Sources */,
 				2AC6444725B1E05F00551D44 /* AppDelegate.swift in Sources */,
 				2A7944F125B8F767009899CC /* TrackService.swift in Sources */,
+				2ABEABF225C895C700469F47 /* TransitioningDelegate.swift in Sources */,
 				2AC6444925B1E05F00551D44 /* SceneDelegate.swift in Sources */,
+				2ABEAC0125C896ED00469F47 /* DismissAnimatedTransitioning.swift in Sources */,
 				2AED5A8425BF3B56005B622F /* UserService.swift in Sources */,
+				2ABEABF725C8960800469F47 /* PresentationController.swift in Sources */,
 				2AED5A9825BF62D8005B622F /* BaseCoordinator.swift in Sources */,
 				2A7944E625B8F73B009899CC /* Path.swift in Sources */,
-				2A7944F625B8F78C009899CC /* LocationService.swift in Sources */,
+				2A7944F625B8F78C009899CC /* LocationManager.swift in Sources */,
 				2AC6448A25B1FB1600551D44 /* ResultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

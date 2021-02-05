@@ -26,19 +26,32 @@ class WorkoutListViewController: UIViewController {
     
     var dateFormatter = DateFormatter()
     
+    private var edgeSwipeGestureRecognizer: UISwipeGestureRecognizer?
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Список тренировок"
         
+        tableView.backgroundColor = .clear
+        
         guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else { return }
-        print(userLogin)
+        
         workouts = service.list(userLogin)
         
         dateFormatter.timeStyle = .short
         dateFormatter.dateStyle = .short
         dateFormatter.locale = Locale(identifier: "ru_RU")
+        
+        edgeSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes))
+        view.addGestureRecognizer(edgeSwipeGestureRecognizer!)
+    }
+    
+    @objc func handleSwipes(gestureRecognizer: UISwipeGestureRecognizer) {
+        if gestureRecognizer.direction == .right {
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     // MARK: - Private methods
@@ -60,7 +73,7 @@ class WorkoutListViewController: UIViewController {
 extension WorkoutListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let workout = workouts?[indexPath.row] {
-            dismiss(animated: false, completion: { [self] in
+            dismiss(animated: true, completion: { [self] in
                 onWorkoutDetails?(workout.activityID, workout.title)
             })
         }

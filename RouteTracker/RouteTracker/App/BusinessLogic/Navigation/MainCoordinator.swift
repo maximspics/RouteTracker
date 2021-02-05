@@ -52,7 +52,11 @@ final class MainCoordinator: BaseCoordinator {
             self?.mapViewController?.onWorkoutDelete(activityID)
         }
         
-        self.rootController?.present(controller, animated: true)
+        let transitioningDelegate = TransitioningDelegate.shared
+        controller.modalPresentationStyle = .custom
+        controller.transitioningDelegate = transitioningDelegate
+        
+        rootController?.present(controller, animated: true)
     }
     
     private func showWorkoutDetailModule(_ activityID: String, _ title: String) {
@@ -66,6 +70,11 @@ final class MainCoordinator: BaseCoordinator {
             self?.mapViewController?.onWorkoutSelect(activityID)
         }
         
-        self.rootController?.present(controller, animated: true)
+        let transitioningDelegate = TransitioningDelegate.shared
+        controller.modalPresentationStyle = .custom
+        controller.transitioningDelegate = transitioningDelegate
+        
+        rootController?.present(controller, animated: true)
     }
 }
+

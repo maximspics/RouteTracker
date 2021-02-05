@@ -9,6 +9,8 @@ import UIKit
 import GoogleMaps
 import CoreLocation
 import RealmSwift
+import RxSwift
+import RxCocoa
 
 class MapViewController: UIViewController {
     
@@ -56,7 +58,7 @@ class MapViewController: UIViewController {
     let homeCoordinate = CLLocationCoordinate2D(latitude: 55.752455, longitude: 37.623033)
     let geocoder = CLGeocoder()
     
-    var locationService = LocationService.shared
+    var locationManager = LocationManager.shared
     var workoutService = WorkoutService()
     var trackService = TrackService()
     var currentWorkout: Workout?
@@ -78,26 +80,26 @@ class MapViewController: UIViewController {
     var route: GMSPolyline? {
         didSet {
             route?.strokeColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
-            route?.strokeWidth = 5
+            route?.strokeWidth = 6
         }
     }
     
     var onWorkoutList: (() -> Void)?
     var onWorkoutDetails: ((String, String) -> Void)?
     var onLogout: (() -> Void)?
-    var dateFormatter = DateFormatter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        locationService.delegate = self
+        locationManager.delegate = self
         
         guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else { return }
         workoutCount = workoutService.count(userLogin)
         
         configureSearch()
         configureMap()
+        configureLocationManager()
         showWelcomeMessage()
     }
     
@@ -116,7 +118,7 @@ class MapViewController: UIViewController {
     func showAlertMessage(_ message: String) {
         let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
         present(alertController, animated: true) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.29) {
                 alertController.dismiss(animated: true, completion: nil)
             }
         }
@@ -144,6 +146,20 @@ class MapViewController: UIViewController {
         mapView.mapType = .hybrid
     }
     
+    func configureLocationManager() {
+        let _ = locationManager
+            .location
+            .asObservable()
+            .bind { [weak self] location in
+                guard let location = location else { return }
+                self?.routePath?.add(location.coordinate)
+                self?.route?.path = self?.routePath
+                
+                let position = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 17)
+                self?.mapView.animate(to: position)
+            }
+    }
+    
     func removeMarker() {
         marker?.map = nil
         marker = nil
@@ -165,10 +181,9 @@ class MapViewController: UIViewController {
     
     func configureRoutePath() {
         route?.map = nil
-        routePath = nil
         route = GMSPolyline()
-        route?.map = mapView
         routePath = GMSMutablePath()
+        route?.map = mapView
     }
     
     func loadPathFromWorkoutWith(activityID: String) {
@@ -178,11 +193,10 @@ class MapViewController: UIViewController {
         currentWorkout = workoutService.loadBy(activityID: activityID)
         
         mapView.animate(toLocation: CLLocationCoordinate2D(latitude: firstCoordinate.latitude,
-                                                           longitude: firstCoordinate.longitude)
-        )
+                                                           longitude: firstCoordinate.longitude))
         
         configureRoutePath()
-                
+        
         paths.forEach { path in
             routePath?.add(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
             route?.path = routePath
@@ -207,8 +221,8 @@ class MapViewController: UIViewController {
     
     func saveAndStopWorkout() {
         var totalDistance: Double?
-        if let lastLocation = locationService.lastKnownLocation,
-            let firstLocation = locationService.firstKnownLocation {
+        if let lastLocation = locationManager.lastKnownLocation,
+            let firstLocation = locationManager.firstKnownLocation {
             totalDistance = trackService.calculateDistance(from: firstLocation, to: lastLocation)
         }
         
@@ -221,14 +235,13 @@ class MapViewController: UIViewController {
         
         if let data = image.jpegData(compressionQuality: 0.8) {
             let url = documentsDirectory.appendingPathComponent("Img_\(userLogin + "_" + myTimeStamp).jpeg")
-            print(url as Any)
             try? data.write(to: url)
             workoutService.stop(distance: totalDistance, userLogin: userLogin, urlScreenshot: "\(url)")
         } else {
             workoutService.stop(distance: totalDistance, userLogin: userLogin, urlScreenshot: "")
         }
         
-        locationService.stop()
+        locationManager.stop()
     }
     
     func logout() {
@@ -241,8 +254,8 @@ class MapViewController: UIViewController {
 
     // MARK: - Actions
     @IBAction func goHome(_ sender: Any) {
-        guard locationService.isWorkoutStarted == false else {
-            showErrorMessage(message: "Необходимо закончить тренировку.")
+        guard locationManager.isWorkoutStarted.value == false else {
+            showAlertMessage("Необходимо закончить тренировку")
             return
         }
         removeMarker()
@@ -304,9 +317,9 @@ class MapViewController: UIViewController {
     
     @IBAction func btnLogoutClicked(_ sender: Any) {
         
-        let actionVC = locationService.isWorkoutStarted == false ? UIAlertController(title: "", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert) : UIAlertController(title: "", message: "Вы хотите выйти и сохранить тренировку?", preferredStyle: .alert)
+        let actionVC = locationManager.isWorkoutStarted.value == false ? UIAlertController(title: "", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert) : UIAlertController(title: "", message: "Вы хотите выйти и сохранить тренировку?", preferredStyle: .alert)
         
-        let actionOK = locationService.isWorkoutStarted == false ? UIAlertAction(title: "Да", style: .default) { [weak self] _ in self?.logout() } : UIAlertAction(title: "Сохранить и выйти", style: .default) { [weak self] _ in self?.saveAndStopWorkout()
+        let actionOK = locationManager.isWorkoutStarted.value == false ? UIAlertAction(title: "Да", style: .default) { [weak self] _ in self?.logout() } : UIAlertAction(title: "Сохранить и выйти", style: .default) { [weak self] _ in self?.saveAndStopWorkout()
             self?.logout()
         }
         
@@ -318,24 +331,28 @@ class MapViewController: UIViewController {
     }
     
     @IBAction func btnMyCurrentLocationClicked(_ sender: Any) {
-        guard locationService.isUpdateLocationRestricted == false else {
+        guard locationManager.isUpdateLocationRestricted == false else {
             showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
             return
         }
-        route = nil
-        locationService.currentLocation()
         
+        if locationManager.isWorkoutStarted.value {
+            showAlertMessage("Отслеживание включено")
+        } else {
+            locationManager.currentLocation()
+            locationManager.locationManager.requestLocation()
+        }
     }
     
     @IBAction func btnStartDetectionClicked(_ sender: Any) {
-        guard locationService.isUpdateLocationRestricted == false else {
+        guard locationManager.isUpdateLocationRestricted == false else {
             showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
             return
         }
         
-        if locationService.isWorkoutStarted == false {
+        if locationManager.isWorkoutStarted.value == false {
             currentWorkout = workoutService.start()
-            locationService.start()
+            locationManager.start()
             workoutCount += 1
         } else {
             saveAndStopWorkout()
@@ -344,12 +361,12 @@ class MapViewController: UIViewController {
     
     @IBAction func btnWorkoutListClicked(_ sender: Any) {
         guard workoutCount > 0 else {
-            showErrorMessage(message: "Нет записанных тренировок.")
+            showAlertMessage("Нет записанных тренировок")
             return
         }
         
-        guard locationService.isWorkoutStarted == false else {
-            showErrorMessage(message: "Необходимо закончить тренировку.")
+        guard locationManager.isWorkoutStarted.value == false else {
+            showAlertMessage("Необходимо закончить тренировку")
             return
         }
         
@@ -410,20 +427,19 @@ extension MapViewController: LocationServiceDelegate {
     
     func willUpdateLocationStopped() {
         stopWorkout()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = DateFormatter.Style.medium
-        dateFormatter.timeZone = .current
         onWorkoutDetails?(currentWorkout?.activityID ?? "", "Тренировка завершена!")
     }
     
     func didLocationChanged(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) {
         guard let coordinate = coordinate else { return }
-        mapView.animate(toLocation: coordinate)
-              
-        routePath?.add(coordinate)
-        route?.path = routePath
         
-        trackService.track(workout: currentWorkout, coordinate: coordinate)
+        mapView.animate(toLocation: coordinate)
+        
+        if locationManager.isWorkoutStarted.value {
+            routePath?.add(coordinate)
+            route?.path = routePath
+            trackService.track(workout: currentWorkout, coordinate: coordinate)
+        }
     }
     
     func didUpdateIsInactive(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) { }

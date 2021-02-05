@@ -106,6 +106,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnLogin" destination="BVR-H1-ba1" id="9j7-ui-Xl8"/>
                         <outlet property="scrollContainer" destination="43l-LX-ULx" id="9VG-y9-TGc"/>
                         <outlet property="txtLogin" destination="maR-iy-mFE" id="46R-m9-gxU"/>
                         <outlet property="txtPassword" destination="Kna-dP-N9K" id="m2w-Ty-Cjp"/>
@@ -246,6 +247,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="kAX-G3-TrS"/>
                     <connections>
+                        <outlet property="btnRegister" destination="C04-nl-Ibo" id="nii-Cr-tLl"/>
                         <outlet property="txtFirstName" destination="g06-Qz-pmp" id="xWQ-YN-DXp"/>
                         <outlet property="txtLastName" destination="SU3-hy-wAe" id="KbQ-2d-wiJ"/>
                         <outlet property="txtLogin" destination="FOw-yX-ijd" id="LON-ti-EfX"/>
