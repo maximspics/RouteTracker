@@ -54,9 +54,9 @@ class WorkoutService: NSObject {
     }
     
     func loadBy(activityID: String) -> Workout? {
-        guard let workoutFromDb = realm.get(Workout.self)?.filter("activityID = '\(activityID)'"),
-              workoutFromDb.isEmpty == false else { return nil }
+        guard let workout = realm.get(Workout.self)?.filter("activityID = '\(activityID)'"),
+              workout.isEmpty == false else { return nil }
         
-        return workoutFromDb.first
+        return workout.first
     }
 }

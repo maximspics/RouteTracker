@@ -22,8 +22,9 @@ class RealmService {
     }
     
     func save<T: Object>(items: T) throws {
+        print(deleteIfMigration.fileURL ?? "")
         try realm?.write {
-            realm?.add(items.self, update: Realm.UpdatePolicy.modified)
+            realm?.add(items, update: .all)
         }
     }
     
@@ -32,7 +33,7 @@ class RealmService {
             realm?.delete(items)
         }
     }
-        
+    
     func delete<T: Object>(items: Results<T>) throws {
         try realm?.write {
             realm?.delete(items)

@@ -7,9 +7,11 @@ target 'RouteTracker' do
 
   # Pods for RouteTracker
 
-	pod "GoogleMaps"
-  pod "RealmSwift"
+	pod 'GoogleMaps'
+  pod 'RealmSwift'
   pod 'Kingfisher'
+  pod 'RxSwift'
+  pod 'RxCocoa'
 
   target 'RouteTrackerTests' do
     inherit! :search_paths

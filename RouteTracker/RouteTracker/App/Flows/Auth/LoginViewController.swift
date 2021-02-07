@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class LoginViewController: UIViewController {
     // MARK: Outlets
@@ -20,6 +22,9 @@ class LoginViewController: UIViewController {
             txtPassword.isSecureTextEntry = true
         }
     }
+    
+    @IBOutlet weak var btnLogin: UIButton!
+    
     @IBOutlet weak var scrollContainer: UIScrollView!
     
     // MARK: - Properties
@@ -46,6 +51,8 @@ class LoginViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillBeHidden(notification:)),
                                                name: UIResponder.keyboardWillHideNotification, object: nil)
         navigationController?.navigationBar.isHidden = true
+        
+        configureButtonEnterClicked()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -70,6 +77,17 @@ class LoginViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 alertController.dismiss(animated: true, completion: nil)
             }
+        }
+    }
+    
+    private func configureButtonEnterClicked() {
+        let _ = Observable
+            .combineLatest(txtLogin.rx.text, txtPassword.rx.text)
+            .map { (login, password) in
+                return (!(login ?? "").isEmpty && (password ?? "").count >= 2)
+        }
+        .bind { [weak btnLogin] fieldNotEmpty in
+            btnLogin?.isEnabled = fieldNotEmpty
         }
     }
     
@@ -111,7 +129,7 @@ class LoginViewController: UIViewController {
             return
         }
         
-        guard service.isUserExistWith(login: login, password: password) == true,
+        guard service.isUserExistWith(login: login) == true,
               let user = service.getUserBy(login: login, password: password)?.first else {
             showAlertMessage("Пользователь с таким логином и паролем не найден!")
             return
