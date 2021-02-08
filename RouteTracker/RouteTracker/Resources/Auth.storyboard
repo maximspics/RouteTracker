@@ -125,7 +125,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="SQj-PW-eA0">
-                                <rect key="frame" x="25" y="69" width="364" height="365"/>
+                                <rect key="frame" x="25" y="81" width="364" height="365"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="SIX-3X-Lsa">
                                         <rect key="frame" x="57" y="0.0" width="250" height="59"/>
@@ -236,12 +236,21 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1O8-Af-Dlb">
+                                <rect key="frame" x="386.5" y="54" width="17.5" height="22"/>
+                                <state key="normal" image="xmark" catalog="system"/>
+                                <connections>
+                                    <action selector="btnCloseClicked:" destination="omU-QN-cfG" eventType="touchUpInside" id="Th2-fX-ko0"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uqo-qv-jMo"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="SQj-PW-eA0" firstAttribute="leading" secondItem="uqo-qv-jMo" secondAttribute="leading" constant="25" id="HBq-1S-Ilb"/>
-                            <constraint firstItem="SQj-PW-eA0" firstAttribute="top" secondItem="uqo-qv-jMo" secondAttribute="top" constant="25" id="roJ-dl-cHa"/>
+                            <constraint firstItem="uqo-qv-jMo" firstAttribute="trailing" secondItem="1O8-Af-Dlb" secondAttribute="trailing" constant="10" id="PGd-an-71L"/>
+                            <constraint firstItem="SQj-PW-eA0" firstAttribute="top" secondItem="1O8-Af-Dlb" secondAttribute="bottom" constant="5" id="bgE-IY-lh2"/>
+                            <constraint firstItem="1O8-Af-Dlb" firstAttribute="top" secondItem="uqo-qv-jMo" secondAttribute="top" constant="10" id="m0o-3k-nZI"/>
                             <constraint firstItem="uqo-qv-jMo" firstAttribute="trailing" secondItem="SQj-PW-eA0" secondAttribute="trailing" constant="25" id="umQ-HO-YGj"/>
                         </constraints>
                     </view>
@@ -261,6 +270,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

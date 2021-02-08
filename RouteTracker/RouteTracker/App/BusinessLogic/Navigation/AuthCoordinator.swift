@@ -12,7 +12,7 @@ final class AuthCoordinator: BaseCoordinator {
     
     var rootController: UINavigationController?
     var onFinishFlow: (() -> Void)?
-    var mapViewController: MapViewController?
+    var loginViewController: LoginViewController?
     
     override func start() {
         showLoginModule()
@@ -33,17 +33,22 @@ final class AuthCoordinator: BaseCoordinator {
         let rootController = UINavigationController(rootViewController: controller)
         setAsRoot(rootController)
         self.rootController = rootController
+        self.loginViewController = controller
     }
     
     private func showRegisterModule() {
         let controller = UIStoryboard(name: "Auth", bundle: nil)
             .instantiateViewController(RegisterViewController.self)
         
-        controller.onRegistrationDone = { [weak self]  in
+        controller.onRegistrationDone = { [weak self] in
             self?.onFinishFlow?()
         }
         
-        rootController?.pushViewController(controller, animated: true)
+        let transitioningDelegate = TransitioningDelegate.shared
+        controller.modalPresentationStyle = .custom
+        controller.transitioningDelegate = transitioningDelegate
+        
+        rootController?.present(controller, animated: true)
     }
     
 }

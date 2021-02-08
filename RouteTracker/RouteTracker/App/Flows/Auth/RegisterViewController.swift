@@ -53,6 +53,7 @@ class RegisterViewController: UIViewController {
     // MARK: - Properties
     let service = UserService.shared
     var onRegistrationDone: (() -> Void)?
+    private var edgeSwipeGestureRecognizer: UISwipeGestureRecognizer?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -65,9 +66,17 @@ class RegisterViewController: UIViewController {
         self.view.addGestureRecognizer(touchGuesture)
         
         configureBtnRegisterClicked()
+        edgeSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes))
+        view.addGestureRecognizer(edgeSwipeGestureRecognizer!)
     }
     
     // MARK: - Methods
+    @objc func handleSwipes(gestureRecognizer: UISwipeGestureRecognizer) {
+        if gestureRecognizer.direction == .right {
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
     private func configureBtnRegisterClicked() {
         
         let _ = Observable.combineLatest(txtLogin.rx.text, txtPassword.rx.text, txtNewPassword.rx.text, txtFirstName.rx.text, txtLastName.rx.text).map { [self] (txtLogin, txtPassword, txtNewPassword, txtFirstName, txtLastName) in
@@ -174,5 +183,9 @@ class RegisterViewController: UIViewController {
         } catch {
             showAlertMessage("Ошибка регистрации пользователя")
         }
+    }
+    
+    @IBAction func btnCloseClicked(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
 }
