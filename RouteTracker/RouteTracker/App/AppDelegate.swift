@@ -46,6 +46,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @available(iOS 12.0, *)
     func applicationWillResignActive(_ application: UIApplication) {
         appManager.didShowBlurWhenInnactive()
+        
+        let notify = Notification()
+        notify.send(title: "Route Tracker", subtitle: "Ждем тебя!", content: "Пора на тренировку")
     }
     
     @available(iOS 12.0, *)

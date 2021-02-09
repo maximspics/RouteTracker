@@ -92,14 +92,13 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        locationManager.delegate = self
-        
         guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else { return }
         workoutCount = workoutService.count(userLogin)
         
         configureSearch()
         configureMap()
         configureLocationManager()
+        configureWorkoutStatus()
         showWelcomeMessage()
     }
     
@@ -147,17 +146,34 @@ class MapViewController: UIViewController {
     }
     
     func configureLocationManager() {
-        let _ = locationManager
-            .location
-            .asObservable()
-            .bind { [weak self] location in
-                guard let location = location else { return }
-                self?.routePath?.add(location.coordinate)
-                self?.route?.path = self?.routePath
+        let _ = locationManager.currentObservableLocation.addObservers(self, options: [.new]) { [weak self] (coordinate, _) in
+            
+            guard let coordinate = coordinate else { return }
+            
+            self?.mapView.animate(toLocation: coordinate)
+            
+            if self?.locationManager.isWorkoutStarted.value == true {
                 
-                let position = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 17)
-                self?.mapView.animate(to: position)
+                self?.routePath?.add(coordinate)
+                self?.route?.path = self?.routePath
+                self?.trackService.track(workout: self?.currentWorkout, coordinate: coordinate)
+                
             }
+        }
+    }
+    
+    private func configureWorkoutStatus() {
+        locationManager.isWorkoutStarted.addObservers(self, options: [.new]) { [weak self] (value, _) in
+            guard let self = self else { return }
+            
+            if value == true {
+                self.startWorkout()
+                self.configureRoutePath()
+            } else if value == false {
+                self.stopWorkout()
+                self.onWorkoutDetails?(self.currentWorkout?.activityID ?? "", "Тренировка завершена!")
+            }
+        }
     }
     
     func removeMarker() {
@@ -251,6 +267,18 @@ class MapViewController: UIViewController {
         UserDefaults.standard.set(message, forKey: "message")
         onLogout?()
     }
+    
+    func selectAddress(_ coordinate: CLLocationCoordinate2D?) {
+        if let coordinate = coordinate {
+            if let searchMarker = searchMarker {
+                searchMarker.position = coordinate
+            } else {
+                searchMarker = GMSMarker(position: coordinate)
+                searchMarker?.map = mapView
+            }
+            mapView.animate(toLocation: coordinate)
+        }
+    }
 
     // MARK: - Actions
     @IBAction func goHome(_ sender: Any) {
@@ -340,11 +368,10 @@ class MapViewController: UIViewController {
             showAlertMessage("Отслеживание включено")
         } else {
             locationManager.currentLocation()
-            locationManager.locationManager.requestLocation()
         }
     }
     
-    @IBAction func btnStartDetectionClicked(_ sender: Any) {
+    @IBAction func btnStartWorkoutClicked(_ sender: Any) {
         guard locationManager.isUpdateLocationRestricted == false else {
             showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
             return
@@ -405,58 +432,12 @@ extension MapViewController: UISearchResultsUpdating {
         if let searchText = searchController.searchBar.text {
             geocoder.geocodeAddressString(searchText) { (places, _) in
                 if let places = places,
-                    let resultsController = self.searchController?.searchResultsController as? ResultViewController {
-                    
-                    resultsController.mapViewDelegate = self
+                   let resultsController = self.searchController?.searchResultsController as? ResultViewController {
+                    resultsController.mapViewController = self
                     resultsController.results = places
                     resultsController.update()
-                    
                 }
             }
         }
     }
-    
 }
-
-// MARK: - LocationServiceDelegate
-extension MapViewController: LocationServiceDelegate {
-    func willUpdateLocationStarted() {
-        startWorkout()
-        configureRoutePath()
-    }
-    
-    func willUpdateLocationStopped() {
-        stopWorkout()
-        onWorkoutDetails?(currentWorkout?.activityID ?? "", "Тренировка завершена!")
-    }
-    
-    func didLocationChanged(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) {
-        guard let coordinate = coordinate else { return }
-        
-        mapView.animate(toLocation: coordinate)
-        
-        if locationManager.isWorkoutStarted.value {
-            routePath?.add(coordinate)
-            route?.path = routePath
-            trackService.track(workout: currentWorkout, coordinate: coordinate)
-        }
-    }
-    
-    func didUpdateIsInactive(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?) { }
-    
-    func selectAddres(_ coordinate: CLLocationCoordinate2D?) {
-        if let coordinate = coordinate {
-            if let searchMarker = searchMarker {
-                searchMarker.position = coordinate
-                
-            } else {
-                searchMarker = GMSMarker(position: coordinate)
-                searchMarker?.map = mapView
-                
-            }
-            
-            mapView.animate(toLocation: coordinate)
-        }
-    }
-}
-

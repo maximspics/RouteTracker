@@ -7,16 +7,6 @@
 
 import Foundation
 import CoreLocation
-import RxSwift
-import RxCocoa
-
-protocol LocationServiceDelegate {
-    func willUpdateLocationStarted()
-    func willUpdateLocationStopped()
-    func didLocationChanged(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?)
-    func didUpdateIsInactive(_ manager: CLLocationManager, coordinate: CLLocationCoordinate2D?)
-    func selectAddres(_ coordinate: CLLocationCoordinate2D?)
-}
 
 final class LocationManager: NSObject {
     static let shared = LocationManager()
@@ -28,10 +18,6 @@ final class LocationManager: NSObject {
     }
     
     let locationManager = CLLocationManager()
-    var location: BehaviorRelay<CLLocation?> = BehaviorRelay<CLLocation?>(value: nil)
-
-    
-    var delegate: LocationServiceDelegate?
     
     var isUpdateLocationRestricted: Bool {
         if CLLocationManager.locationServicesEnabled() {
@@ -69,7 +55,6 @@ final class LocationManager: NSObject {
         
         isWorkoutStarted.value = true
         locationManager.startUpdatingLocation()
-        delegate?.willUpdateLocationStarted()
     }
     
     func stop() {
@@ -78,7 +63,6 @@ final class LocationManager: NSObject {
         
         isWorkoutStarted.value = false
         locationManager.stopUpdatingLocation()
-        delegate?.willUpdateLocationStopped()
     }
     
     func stillActive(coordinate: CLLocationCoordinate2D?) {
@@ -88,8 +72,6 @@ final class LocationManager: NSObject {
         
         lastKnownLocation = coordinate
         currentObservableLocation.value = coordinate
-        
-        print(currentObservableLocation.value!)
         
         if firstKnownLocation == nil {
             firstKnownLocation = coordinate
@@ -104,12 +86,7 @@ final class LocationManager: NSObject {
 
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
         stillActive(coordinate: locations.last?.coordinate)
-        
-        self.location.accept(locations.last)
-        
-        delegate?.didLocationChanged(manager, coordinate: locations.last?.coordinate)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

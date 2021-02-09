@@ -11,6 +11,7 @@
 		2A22F90125C2E44800B60258 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F90025C2E44800B60258 /* UIView+Ext.swift */; };
 		2A22F90B25C2F88400B60258 /* WorkoutDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F90A25C2F88400B60258 /* WorkoutDetailViewController.swift */; };
 		2A22F93B25C4333100B60258 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A22F93A25C4333100B60258 /* AppManager.swift */; };
+		2A74333525D21A0000303B7F /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A74333425D21A0000303B7F /* Notification.swift */; };
 		2A7944C425B8F11F009899CC /* RealmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944C325B8F11F009899CC /* RealmService.swift */; };
 		2A7944D925B8F69F009899CC /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944D825B8F69F009899CC /* WorkoutService.swift */; };
 		2A7944E125B8F6E0009899CC /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7944E025B8F6E0009899CC /* Workout.swift */; };
@@ -72,6 +73,7 @@
 		2A22F90025C2E44800B60258 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		2A22F90A25C2F88400B60258 /* WorkoutDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDetailViewController.swift; sourceTree = "<group>"; };
 		2A22F93A25C4333100B60258 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
+		2A74333425D21A0000303B7F /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		2A7944C325B8F11F009899CC /* RealmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmService.swift; sourceTree = "<group>"; };
 		2A7944D825B8F69F009899CC /* WorkoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutService.swift; sourceTree = "<group>"; };
 		2A7944E025B8F6E0009899CC /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
@@ -153,6 +155,14 @@
 				2A22F93A25C4333100B60258 /* AppManager.swift */,
 			);
 			path = Application;
+			sourceTree = "<group>";
+		};
+		2A74333325D219E300303B7F /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				2A74333425D21A0000303B7F /* Notification.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 		2A7944C125B8F070009899CC /* BusinessLogic */ = {
@@ -322,6 +332,7 @@
 		2AC644A125B2F70500551D44 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				2A74333325D219E300303B7F /* Notification */,
 				2ABA870925CC6ACB001AB4F9 /* Observable */,
 				2A22F93925C4331700B60258 /* Application */,
 				2A7944D525B8F623009899CC /* Services */,
@@ -716,6 +727,7 @@
 				2AED5A9825BF62D8005B622F /* BaseCoordinator.swift in Sources */,
 				2A7944E625B8F73B009899CC /* Path.swift in Sources */,
 				2A7944F625B8F78C009899CC /* LocationManager.swift in Sources */,
+				2A74333525D21A0000303B7F /* Notification.swift in Sources */,
 				2AC6448A25B1FB1600551D44 /* ResultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

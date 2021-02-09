@@ -11,6 +11,25 @@ final class AppManager {
     static let shared = AppManager()
     
     var coordinator: BaseCoordinator?
+    var notificationCenter = UNUserNotificationCenter.current()
+    var isNotificationGranted: Bool = false
+    
+    init() {
+        notificationCenter.getNotificationSettings { [weak self] settings in
+            guard let self = self else { return }
+            
+            switch settings.authorizationStatus {
+            case .authorized, .ephemeral, .provisional:
+                self.isNotificationGranted = true
+                
+            default:
+                self.notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] (granted, _) in
+                    guard let self = self else { return }
+                    self.isNotificationGranted = granted
+                }
+            }
+        }
+    }
     
     var blurView: UIView? {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
