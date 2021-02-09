@@ -15,7 +15,7 @@ enum RegisterError: Error {
 
 final class UserService {
     static var shared = UserService()
-    let realm = RealmService.shared
+    private var realm = RealmService.shared
     
     func isUserExistWith(login: String) -> Bool {
         guard realm.get(User.self)?
@@ -32,7 +32,14 @@ final class UserService {
             return nil
         }
         return user
-        
+    }
+    
+    func getUserBy(login: String) -> User? {
+        guard let user = realm.get(User.self)?
+                .filter("login = '\(login)'") else {
+            return nil
+        }
+        return user.first
     }
     
     func register(user: User) throws {
@@ -45,5 +52,16 @@ final class UserService {
         } catch {
             throw RegisterError.registerError
         }
+    }
+    
+    func updateUserAvatar(with userLogin: String, urlAvatar: String) {
+        let currentUser = realm.get(User.self)?
+            .filter("login = '\(userLogin)'").first
+        
+        try? realm.realm?.write {
+            currentUser?.avatarUrl = urlAvatar
+        }
+        
+        
     }
 }

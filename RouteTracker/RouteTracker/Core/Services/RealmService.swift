@@ -22,7 +22,6 @@ class RealmService {
     }
     
     func save<T: Object>(items: T) throws {
-        print(deleteIfMigration.fileURL ?? "")
         try realm?.write {
             realm?.add(items, update: .all)
         }

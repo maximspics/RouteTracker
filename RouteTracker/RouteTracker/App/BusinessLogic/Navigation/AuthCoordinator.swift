@@ -12,7 +12,6 @@ final class AuthCoordinator: BaseCoordinator {
     
     var rootController: UINavigationController?
     var onFinishFlow: (() -> Void)?
-    var loginViewController: LoginViewController?
     
     override func start() {
         showLoginModule()
@@ -31,9 +30,8 @@ final class AuthCoordinator: BaseCoordinator {
         }
         
         let rootController = UINavigationController(rootViewController: controller)
-        setAsRoot(rootController)
         self.rootController = rootController
-        self.loginViewController = controller
+        setAsRoot(rootController)
     }
     
     private func showRegisterModule() {

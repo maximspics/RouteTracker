@@ -13,6 +13,7 @@ final class AppManager {
     var coordinator: BaseCoordinator?
     var notificationCenter = UNUserNotificationCenter.current()
     var isNotificationGranted: Bool = false
+    var userService = UserService.shared
     
     init() {
         notificationCenter.getNotificationSettings { [weak self] settings in
@@ -77,5 +78,37 @@ final class AppManager {
         if isBlurEffectWasShown, let viewWithTag = rootViewController?.view.viewWithTag(1001) {
             viewWithTag.removeFromSuperview()
         }
+    }
+    
+    func loadAvatarUrl() -> String? {
+        guard let userLogin = UserDefaults.standard.string(forKey: "userLogin"),
+              let user = userService.getUserBy(login: userLogin) else { return nil }
+        print(user.avatarUrl)
+        print(user)
+        return user.avatarUrl
+    }
+    
+    func saveAvatarToDisk(avatar: UIImage) {
+        guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else { return }
+        
+        if let imageData = avatar.pngData(),
+           var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            avatarFilePath.appendPathComponent("Avatar_\(userLogin).jpeg")
+            
+            try? imageData.write(to: avatarFilePath)
+            userService.updateUserAvatar(with: userLogin, urlAvatar: "\(avatarFilePath)")
+            
+        }
+    }
+    
+    func resizeAvatar(_ avatar: UIImage, newSize: CGSize? = CGSize(width: 80, height: 80)) -> UIImage? {
+        let rect = CGRect(x: 0, y: 0, width: newSize!.width, height: newSize!.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize!, false, 1.0)
+        avatar.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage
     }
 }

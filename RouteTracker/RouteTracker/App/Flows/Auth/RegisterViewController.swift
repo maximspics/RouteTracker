@@ -16,6 +16,7 @@ class RegisterViewController: UIViewController {
             txtLogin.autocorrectionType = .no
             txtLogin.layer.borderWidth = 0.1
             txtLogin.layer.cornerRadius = 5
+            txtLogin.placeholder = "Логин"
         }
     }
     @IBOutlet weak var txtPassword: UITextField! {
@@ -24,6 +25,7 @@ class RegisterViewController: UIViewController {
             txtPassword.isSecureTextEntry = true
             txtPassword.layer.borderWidth = 0.1
             txtPassword.layer.cornerRadius = 5
+            txtPassword.placeholder = "Пароль"
         }
     }
     @IBOutlet weak var txtNewPassword: UITextField! {
@@ -32,6 +34,7 @@ class RegisterViewController: UIViewController {
             txtNewPassword.isSecureTextEntry = true
             txtNewPassword.layer.borderWidth = 0.1
             txtNewPassword.layer.cornerRadius = 5
+            txtNewPassword.placeholder = "Повторите пароль"
         }
     }
     @IBOutlet weak var txtFirstName: UITextField! {
@@ -39,6 +42,7 @@ class RegisterViewController: UIViewController {
             txtFirstName.autocorrectionType = .no
             txtFirstName.layer.borderWidth = 0.1
             txtFirstName.layer.cornerRadius = 5
+            txtFirstName.placeholder = "Имя"
         }
     }
     @IBOutlet weak var txtLastName: UITextField! {
@@ -46,6 +50,7 @@ class RegisterViewController: UIViewController {
             txtLastName.autocorrectionType = .no
             txtLastName.layer.borderWidth = 0.1
             txtLastName.layer.cornerRadius = 5
+            txtLastName.placeholder = "Фамилия"
         }
     }
     @IBOutlet weak var btnRegister: UIButton!
@@ -59,9 +64,6 @@ class RegisterViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationController?.navigationBar.isHidden = false
-        title = "Регистрация"
-        
         let touchGuesture = UITapGestureRecognizer(target: self, action: #selector(onViewClick))
         self.view.addGestureRecognizer(touchGuesture)
         
@@ -93,7 +95,6 @@ class RegisterViewController: UIViewController {
             
             btnRegister?.isEnabled = fieldFillCorrect
             
-            txtLogin?.placeholder = fieldFillCorrect ? "" : "Обязательно для заполнения"
             if !(txtLogin?.text ?? "").isEmpty && service.isUserExistWith(login: txtLogin!.text ?? "") {
                 txtLogin?.layer.borderColor = UIColor.red.cgColor
                 txtLogin?.layer.borderWidth = 1.0
@@ -108,7 +109,6 @@ class RegisterViewController: UIViewController {
                 txtLogin?.layer.borderWidth = 1.0
             }
             
-            txtFirstName?.placeholder = fieldFillCorrect ? "" : "Обязательно для заполнения"
             if !(txtFirstName?.text ?? "").isEmpty {
                 txtFirstName?.layer.borderColor = UIColor.green.cgColor
                 txtFirstName?.layer.borderWidth = 1.0
@@ -117,7 +117,6 @@ class RegisterViewController: UIViewController {
                 txtFirstName?.layer.borderWidth = 0.1
             }
             
-            txtLastName?.placeholder = fieldFillCorrect ? "" : "Обязательно для заполнения"
             if !(txtLastName?.text ?? "").isEmpty {
                 txtLastName?.layer.borderColor = UIColor.green.cgColor
                 txtLastName?.layer.borderWidth = 1.0
@@ -126,27 +125,25 @@ class RegisterViewController: UIViewController {
                 txtLastName?.layer.borderWidth = 0.1
             }
             
-            if !fieldFillCorrect && (txtPassword?.text ?? "").isEmpty {
+            if !fieldFillCorrect && (txtPassword?.text ?? "").isEmpty || (txtNewPassword?.text ?? "").isEmpty {
                 txtPassword?.layer.borderColor = UIColor.gray.cgColor
                 txtPassword?.layer.borderWidth = 0.1
             }
-            if !fieldFillCorrect && (txtNewPassword?.text ?? "").isEmpty {
+            if !fieldFillCorrect && (txtNewPassword?.text ?? "").isEmpty || (txtPassword?.text ?? "").isEmpty {
                 txtNewPassword?.layer.borderColor = UIColor.gray.cgColor
                 txtNewPassword?.layer.borderWidth = 0.1
             }
             
-            txtPassword?.placeholder = fieldFillCorrect ? "" : "Обязательно для заполнения"
-            txtNewPassword?.placeholder = fieldFillCorrect ? "" : "Пароли должны совпадать"
             if  !(txtPassword?.text ?? "").isEmpty && !(txtNewPassword?.text ?? "").isEmpty && txtPassword?.text == txtNewPassword?.text {
                 txtPassword?.layer.borderColor = UIColor.green.cgColor
-                txtPassword?.layer.borderWidth = 0.5
+                txtPassword?.layer.borderWidth = 1.0
                 txtNewPassword?.layer.borderColor = UIColor.green.cgColor
-                txtNewPassword?.layer.borderWidth = 0.5
-            } else if !(txtPassword?.text ?? "").isEmpty && !(txtNewPassword?.text ?? "").isEmpty && txtPassword?.text != txtNewPassword?.text{
+                txtNewPassword?.layer.borderWidth = 1.0
+            } else if !(txtPassword?.text ?? "").isEmpty && !(txtNewPassword?.text ?? "").isEmpty && txtPassword?.text != txtNewPassword?.text {
                 txtPassword?.layer.borderColor = UIColor.red.cgColor
-                txtPassword?.layer.borderWidth = 0.5
+                txtPassword?.layer.borderWidth = 1.0
                 txtNewPassword?.layer.borderColor = UIColor.red.cgColor
-                txtNewPassword?.layer.borderWidth = 0.5
+                txtNewPassword?.layer.borderWidth = 1.0
             }
         }
     }
@@ -186,6 +183,6 @@ class RegisterViewController: UIViewController {
     }
     
     @IBAction func btnCloseClicked(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }
