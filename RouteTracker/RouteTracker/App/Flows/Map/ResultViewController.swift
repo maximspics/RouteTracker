@@ -18,7 +18,7 @@ class ResultViewController: UIViewController {
     }
     
     // MARK: - Properties
-    var mapViewDelegate: LocationServiceDelegate?
+    var mapViewController: MapViewController?
     var results: [CLPlacemark] = []
     
     // MARK: - Lifecycle
@@ -36,7 +36,7 @@ class ResultViewController: UIViewController {
 // MARK: - UITableViewDelegate
 extension ResultViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mapViewDelegate?.selectAddres(results[indexPath.row].location?.coordinate)
+        mapViewController?.selectAddress(results[indexPath.row].location?.coordinate)
         dismiss(animated: true)
     }
 }
