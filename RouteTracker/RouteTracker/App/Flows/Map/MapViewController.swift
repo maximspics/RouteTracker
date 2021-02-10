@@ -158,12 +158,15 @@ class MapViewController: UIViewController {
             self?.mapView.animate(toLocation: coordinate)
             
             if self?.locationManager.isWorkoutStarted.value == true {
+                if let imgData = UserDefaults.standard.data(forKey: "imageData"), let image = UIImage(data: imgData) {
+                    let customMarker = CustomMarkerView(frame: CGRect(x: 0, y: 0, width: 40, height: 40), image: image, borderColor: .white, borderWidth: 2, radius: 20)
+                    self?.currentPositionMarker.iconView = customMarker
+                }
                 self?.currentPositionMarker.position = coordinate
                 self?.currentPositionMarker.map = self?.mapView
                 self?.routePath?.add(coordinate)
                 self?.route?.path = self?.routePath
                 self?.trackService.track(workout: self?.currentWorkout, coordinate: coordinate)
-                
             }
         }
     }
@@ -263,6 +266,7 @@ class MapViewController: UIViewController {
             workoutService.stop(distance: totalDistance, userLogin: userLogin, urlScreenshot: "")
         }
         
+        currentPositionMarker.map = nil
         locationManager.stop()
     }
     
@@ -288,7 +292,8 @@ class MapViewController: UIViewController {
     
     func onAvatarChanged(_ avatar: UIImage?) {
         guard let avatar = avatar else { return }
-        currentPositionMarker.icon = avatar.circularImage(40)
+        let customMarker = CustomMarkerView(frame: CGRect(x: 0, y: 0, width: 40, height: 40), image: avatar, borderColor: .white, borderWidth: 2, radius: 20)
+        currentPositionMarker.iconView = customMarker
     }
     
     // MARK: - Actions

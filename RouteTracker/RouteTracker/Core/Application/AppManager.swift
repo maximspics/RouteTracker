@@ -80,28 +80,32 @@ final class AppManager {
         }
     }
     
-    func loadAvatarUrl() -> String? {
-        guard let userLogin = UserDefaults.standard.string(forKey: "userLogin"),
-              let user = userService.getUserBy(login: userLogin) else { return nil }
-        print(user.avatarUrl)
-        print(user)
-        return user.avatarUrl
+    func loadAvatar() -> UIImage? {
+        if var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+           let userLogin = UserDefaults.standard.string(forKey: "userLogin") {
+            avatarFilePath.appendPathComponent("Avatar_\(userLogin).jpeg")
+            
+            if let imgData = try? Data(contentsOf: avatarFilePath),
+               let image = UIImage(data: imgData) {
+                return image
+            }
+        }
+        
+        return UIImage(named: "default_marker")
     }
     
-    func saveAvatarToDisk(avatar: UIImage) {
-        guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else { return }
-        
+    func saveAvatar(avatar: UIImage) {
         if let imageData = avatar.pngData(),
-           var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+           var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+           let userLogin = UserDefaults.standard.string(forKey: "userLogin") {
             avatarFilePath.appendPathComponent("Avatar_\(userLogin).jpeg")
             
             try? imageData.write(to: avatarFilePath)
-            userService.updateUserAvatar(with: userLogin, urlAvatar: "\(avatarFilePath)")
-            
+            UserDefaults.standard.set(imageData, forKey: "imageData")
         }
     }
     
-    func resizeAvatar(_ avatar: UIImage, newSize: CGSize? = CGSize(width: 80, height: 80)) -> UIImage? {
+    func resizeAvatar(_ avatar: UIImage, newSize: CGSize? = CGSize(width: 50, height: 50)) -> UIImage? {
         let rect = CGRect(x: 0, y: 0, width: newSize!.width, height: newSize!.height)
         
         UIGraphicsBeginImageContextWithOptions(newSize!, false, 1.0)

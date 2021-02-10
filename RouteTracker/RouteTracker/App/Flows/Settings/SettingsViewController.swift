@@ -37,8 +37,8 @@ class SettingsViewController: UIViewController {
             btnAddAvatar.isEnabled = true
         }
         
-        if let avatarUrl = AppManager.shared.loadAvatarUrl(), !avatarUrl.isEmpty {
-            imgAvatarView.kf.setImage(with: URL(string: avatarUrl))
+        if let defaultAvatar = AppManager.shared.loadAvatar() {
+            imgAvatarView.image = defaultAvatar
         }
         
         edgeSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes))
@@ -61,7 +61,7 @@ class SettingsViewController: UIViewController {
         
         present(imagePicker, animated: true)
     }
-
+    
     @IBAction func btnCloseClicked(_ sender: Any) {
         dismiss(animated: true)
     }
@@ -85,7 +85,7 @@ extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationC
            let smallImage = AppManager.shared.resizeAvatar(image) {
             imgAvatarView.image = smallImage
             
-            AppManager.shared.saveAvatarToDisk(avatar: smallImage)
+            AppManager.shared.saveAvatar(avatar: smallImage)
             
             didAvatarChanged?(smallImage)
         }

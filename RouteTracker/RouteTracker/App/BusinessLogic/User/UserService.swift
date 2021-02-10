@@ -22,7 +22,6 @@ final class UserService {
             .filter("login = '\(login)'").count == 0 else {
                 return true
         }
-        
         return false
     }
     
@@ -32,14 +31,6 @@ final class UserService {
             return nil
         }
         return user
-    }
-    
-    func getUserBy(login: String) -> User? {
-        guard let user = realm.get(User.self)?
-                .filter("login = '\(login)'") else {
-            return nil
-        }
-        return user.first
     }
     
     func register(user: User) throws {
@@ -52,16 +43,5 @@ final class UserService {
         } catch {
             throw RegisterError.registerError
         }
-    }
-    
-    func updateUserAvatar(with userLogin: String, urlAvatar: String) {
-        let currentUser = realm.get(User.self)?
-            .filter("login = '\(userLogin)'").first
-        
-        try? realm.realm?.write {
-            currentUser?.avatarUrl = urlAvatar
-        }
-        
-        
     }
 }
