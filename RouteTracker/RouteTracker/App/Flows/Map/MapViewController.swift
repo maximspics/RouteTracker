@@ -213,19 +213,20 @@ class MapViewController: UIViewController {
     
     func loadPathFromWorkoutWith(activityID: String) {
         guard let paths = trackService.list(workoutID: activityID), !paths.isEmpty else { return }
-        guard let firstCoordinate = paths.first else { return }
         
         currentWorkout = workoutService.loadBy(activityID: activityID)
-        
-        mapView.animate(toLocation: CLLocationCoordinate2D(latitude: firstCoordinate.latitude,
-                                                           longitude: firstCoordinate.longitude))
-        
         configureRoutePath()
         
+        var bounds = GMSCoordinateBounds()
         paths.forEach { path in
             routePath?.add(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
             route?.path = routePath
+            bounds = bounds.includingCoordinate(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
         }
+        
+        mapView.setMinZoom(1, maxZoom: 17)
+        let update = GMSCameraUpdate.fit(bounds, withPadding: 50)
+        mapView.animate(with: update)
     }
     
     func onWorkoutSelect(_ activityID: String) {
@@ -424,13 +425,16 @@ class MapViewController: UIViewController {
 // MARK: - GMSMApViewDelegate
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        removeMarker()
-        let marker = GMSMarker(position: coordinate)
-        marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
-        marker.icon = GMSMarker.markerImage(with: .green)
-        marker.map = mapView
-        mapView.animate(toLocation: coordinate)
-        self.marker = marker
+        if marker == nil {
+            let marker = GMSMarker(position: coordinate)
+            marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
+            marker.icon = GMSMarker.markerImage(with: .green)
+            marker.map = mapView
+            mapView.animate(toLocation: coordinate)
+            self.marker = marker
+        } else {
+            removeMarker()
+        }
     }
     
     func mapView(_ mapView: GMSMapView, didTapPOIWithPlaceID placeID: String, name: String, location: CLLocationCoordinate2D) {
