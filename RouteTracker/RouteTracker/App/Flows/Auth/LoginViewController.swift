@@ -14,12 +14,14 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var txtLogin: UITextField! {
         didSet {
             txtLogin.autocorrectionType = .no
+            txtLogin.placeholder = "Логин"
         }
     }
     @IBOutlet weak var txtPassword: UITextField! {
         didSet {
             txtPassword.autocorrectionType = .no
             txtPassword.isSecureTextEntry = true
+            txtPassword.placeholder = "Пароль"
         }
     }
     
@@ -107,6 +109,4 @@ class LoginViewController: UIViewController {
     @IBAction func btnRegisterClicked(_ sender: Any) {
         onRegister?()
     }
-    
-    
 }

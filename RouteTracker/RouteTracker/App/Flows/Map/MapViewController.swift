@@ -45,6 +45,14 @@ class MapViewController: UIViewController {
             btnWorkoutList.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
         }
     }
+    
+    @IBOutlet weak var btnSettings: UIButton! {
+        didSet {
+            btnSettings.layer.cornerRadius = 8
+            btnSettings.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+        }
+    }
+    
     @IBOutlet var btnCollection: [UIButton]! {
         didSet {
             for btn in btnCollection {
@@ -66,13 +74,18 @@ class MapViewController: UIViewController {
     var searchMarker: GMSMarker?
     var marker: GMSMarker?
     let placeInfoMarker = GMSMarker()
+    var currentPositionMarker = GMSMarker() {
+        didSet {
+            currentPositionMarker.map = mapView
+        }
+    }
     
     var currentZoomLevel: Float = 17
     let zoomLevelStep: Float = 1
     
     var searchController: UISearchController?
     var isSearchBarEmpty: Bool {
-      return searchController?.searchBar.text?.isEmpty ?? true
+        return searchController?.searchBar.text?.isEmpty ?? true
     }
     
     var routePath: GMSMutablePath?
@@ -86,6 +99,7 @@ class MapViewController: UIViewController {
     
     var onWorkoutList: (() -> Void)?
     var onWorkoutDetails: ((String, String) -> Void)?
+    var onSettings: (() -> Void)?
     var onLogout: (() -> Void)?
     
     // MARK: - Lifecycle
@@ -106,25 +120,16 @@ class MapViewController: UIViewController {
     func showWelcomeMessage() {
         let message = UserDefaults.standard.string(forKey: "message")
         if message != "" {
-            showAlertMessage(message!)
+            showSelfDisappearingMessage(message!)
             UserDefaults.standard.set("", forKey: "message")
         } else {
             guard let firstName = UserDefaults.standard.string(forKey: "firstName") else { return }
-            showAlertMessage("Привет, \(firstName)!\nПора на тренировку!")
-        }
-    }
-    
-    func showAlertMessage(_ message: String) {
-        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
-        present(alertController, animated: true) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.29) {
-                alertController.dismiss(animated: true, completion: nil)
-            }
+            showSelfDisappearingMessage("Привет, \(firstName)!\nПора на тренировку!")
         }
     }
     
     func configureSearch() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Map", bundle: nil)
         if let resultViewController = storyboard.instantiateViewController(identifier: "ResultViewController") as? ResultViewController {
             searchController = UISearchController(searchResultsController: resultViewController)
             guard let searchController = searchController else { return }
@@ -153,11 +158,15 @@ class MapViewController: UIViewController {
             self?.mapView.animate(toLocation: coordinate)
             
             if self?.locationManager.isWorkoutStarted.value == true {
-                
+                if let imgData = UserDefaults.standard.data(forKey: "imageData"), let image = UIImage(data: imgData) {
+                    let customMarker = CustomMarkerView(frame: CGRect(x: 0, y: 0, width: 40, height: 40), image: image, borderColor: .white, borderWidth: 2, radius: 20)
+                    self?.currentPositionMarker.iconView = customMarker
+                }
+                self?.currentPositionMarker.position = coordinate
+                self?.currentPositionMarker.map = self?.mapView
                 self?.routePath?.add(coordinate)
                 self?.route?.path = self?.routePath
                 self?.trackService.track(workout: self?.currentWorkout, coordinate: coordinate)
-                
             }
         }
     }
@@ -166,11 +175,11 @@ class MapViewController: UIViewController {
         locationManager.isWorkoutStarted.addObservers(self, options: [.new]) { [weak self] (value, _) in
             guard let self = self else { return }
             
-            if value == true {
-                self.startWorkout()
+            if value {
+                self.isWorkout(started: value)
                 self.configureRoutePath()
-            } else if value == false {
-                self.stopWorkout()
+            } else {
+                self.isWorkout(started: value)
                 self.onWorkoutDetails?(self.currentWorkout?.activityID ?? "", "Тренировка завершена!")
             }
         }
@@ -181,18 +190,18 @@ class MapViewController: UIViewController {
         marker = nil
     }
     
-    func startWorkout() {
-        UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.btnStartDetection.setTitle("Закончить тренировку", for: .normal)
-            self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.95)
-        }, completion: nil)
-    }
-    
-    func stopWorkout() {
-        UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.btnStartDetection.setTitle("Начать тренировку", for: .normal)
-            self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
-        }, completion: nil)
+    func isWorkout(started: Bool) {
+        if started {
+            UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+                self.btnStartDetection.setTitle("Закончить тренировку", for: .normal)
+                self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.95)
+            }, completion: nil)
+        } else {
+            UIView.animate(withDuration: 0.29, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+                self.btnStartDetection.setTitle("Начать тренировку", for: .normal)
+                self.btnStartDetection.layer.backgroundColor = #colorLiteral(red: 0.1803921569, green: 0.6392156863, blue: 1, alpha: 0.95)
+            }, completion: nil)
+        }
     }
     
     func configureRoutePath() {
@@ -204,19 +213,20 @@ class MapViewController: UIViewController {
     
     func loadPathFromWorkoutWith(activityID: String) {
         guard let paths = trackService.list(workoutID: activityID), !paths.isEmpty else { return }
-        guard let firstCoordinate = paths.first else { return }
         
         currentWorkout = workoutService.loadBy(activityID: activityID)
-        
-        mapView.animate(toLocation: CLLocationCoordinate2D(latitude: firstCoordinate.latitude,
-                                                           longitude: firstCoordinate.longitude))
-        
         configureRoutePath()
         
+        var bounds = GMSCoordinateBounds()
         paths.forEach { path in
             routePath?.add(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
             route?.path = routePath
+            bounds = bounds.includingCoordinate(CLLocationCoordinate2D(latitude: path.latitude, longitude: path.longitude))
         }
+        
+        mapView.setMinZoom(1, maxZoom: 17)
+        let update = GMSCameraUpdate.fit(bounds, withPadding: 50)
+        mapView.animate(with: update)
     }
     
     func onWorkoutSelect(_ activityID: String) {
@@ -238,7 +248,7 @@ class MapViewController: UIViewController {
     func saveAndStopWorkout() {
         var totalDistance: Double?
         if let lastLocation = locationManager.lastKnownLocation,
-            let firstLocation = locationManager.firstKnownLocation {
+           let firstLocation = locationManager.firstKnownLocation {
             totalDistance = trackService.calculateDistance(from: firstLocation, to: lastLocation)
         }
         
@@ -257,6 +267,7 @@ class MapViewController: UIViewController {
             workoutService.stop(distance: totalDistance, userLogin: userLogin, urlScreenshot: "")
         }
         
+        currentPositionMarker.map = nil
         locationManager.stop()
     }
     
@@ -279,11 +290,17 @@ class MapViewController: UIViewController {
             mapView.animate(toLocation: coordinate)
         }
     }
-
+    
+    func onAvatarChanged(_ avatar: UIImage?) {
+        guard let avatar = avatar else { return }
+        let customMarker = CustomMarkerView(frame: CGRect(x: 0, y: 0, width: 40, height: 40), image: avatar, borderColor: .white, borderWidth: 2, radius: 20)
+        currentPositionMarker.iconView = customMarker
+    }
+    
     // MARK: - Actions
     @IBAction func goHome(_ sender: Any) {
         guard locationManager.isWorkoutStarted.value == false else {
-            showAlertMessage("Необходимо закончить тренировку")
+            showSelfDisappearingMessage("Необходимо закончить тренировку")
             return
         }
         removeMarker()
@@ -360,12 +377,12 @@ class MapViewController: UIViewController {
     
     @IBAction func btnMyCurrentLocationClicked(_ sender: Any) {
         guard locationManager.isUpdateLocationRestricted == false else {
-            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
+            showMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
             return
         }
         
         if locationManager.isWorkoutStarted.value {
-            showAlertMessage("Отслеживание включено")
+            showSelfDisappearingMessage("Отслеживание включено")
         } else {
             locationManager.currentLocation()
         }
@@ -373,7 +390,7 @@ class MapViewController: UIViewController {
     
     @IBAction func btnStartWorkoutClicked(_ sender: Any) {
         guard locationManager.isUpdateLocationRestricted == false else {
-            showErrorMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
+            showMessage(message: "Для работы данной функции необходимо разрешить отслеживание местоположения")
             return
         }
         
@@ -388,29 +405,36 @@ class MapViewController: UIViewController {
     
     @IBAction func btnWorkoutListClicked(_ sender: Any) {
         guard workoutCount > 0 else {
-            showAlertMessage("Нет записанных тренировок")
+            showSelfDisappearingMessage("Нет записанных тренировок")
             return
         }
         
         guard locationManager.isWorkoutStarted.value == false else {
-            showAlertMessage("Необходимо закончить тренировку")
+            showSelfDisappearingMessage("Необходимо закончить тренировку")
             return
         }
         
         onWorkoutList?()
+    }
+    
+    @IBAction func btnSettingsClicked(_ sender: Any) {
+        onSettings?()
     }
 }
 
 // MARK: - GMSMApViewDelegate
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
-        removeMarker()
-        let marker = GMSMarker(position: coordinate)
-        marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
-        marker.icon = GMSMarker.markerImage(with: .green)
-        marker.map = mapView
-        mapView.animate(toLocation: coordinate)
-        self.marker = marker
+        if marker == nil {
+            let marker = GMSMarker(position: coordinate)
+            marker.snippet = "Широта: \(coordinate.latitude)\nДолгота: \(coordinate.longitude)"
+            marker.icon = GMSMarker.markerImage(with: .green)
+            marker.map = mapView
+            mapView.animate(toLocation: coordinate)
+            self.marker = marker
+        } else {
+            removeMarker()
+        }
     }
     
     func mapView(_ mapView: GMSMapView, didTapPOIWithPlaceID placeID: String, name: String, location: CLLocationCoordinate2D) {
@@ -423,7 +447,6 @@ extension MapViewController: GMSMapViewDelegate {
         mapView.selectedMarker = placeInfoMarker
         mapView.animate(toLocation: location)
     }
-
 }
 
 // MARK: - UISearchBarDelegate

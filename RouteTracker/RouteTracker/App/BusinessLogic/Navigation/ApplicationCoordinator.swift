@@ -5,11 +5,9 @@
 //  Created by Maxim Safronov on 25.01.2021.
 //
 
-import Foundation
+import UIKit
 
 final class ApplicationCoordinator: BaseCoordinator {
-    
-    var mapViewController: MapViewController?
     
     override func start() {
         if UserDefaults.standard.bool(forKey: "isLogin") {

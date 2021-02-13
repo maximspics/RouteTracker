@@ -15,14 +15,13 @@ enum RegisterError: Error {
 
 final class UserService {
     static var shared = UserService()
-    let realm = RealmService.shared
+    private var realm = RealmService.shared
     
     func isUserExistWith(login: String) -> Bool {
         guard realm.get(User.self)?
             .filter("login = '\(login)'").count == 0 else {
                 return true
         }
-        
         return false
     }
     
@@ -32,7 +31,6 @@ final class UserService {
             return nil
         }
         return user
-        
     }
     
     func register(user: User) throws {

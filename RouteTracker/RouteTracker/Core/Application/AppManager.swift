@@ -13,6 +13,7 @@ final class AppManager {
     var coordinator: BaseCoordinator?
     var notificationCenter = UNUserNotificationCenter.current()
     var isNotificationGranted: Bool = false
+    var userService = UserService.shared
     
     init() {
         notificationCenter.getNotificationSettings { [weak self] settings in
@@ -77,5 +78,41 @@ final class AppManager {
         if isBlurEffectWasShown, let viewWithTag = rootViewController?.view.viewWithTag(1001) {
             viewWithTag.removeFromSuperview()
         }
+    }
+    
+    func loadAvatar() -> UIImage? {
+        if var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+           let userLogin = UserDefaults.standard.string(forKey: "userLogin") {
+            avatarFilePath.appendPathComponent("Avatar_\(userLogin).jpeg")
+            
+            if let imgData = try? Data(contentsOf: avatarFilePath),
+               let image = UIImage(data: imgData) {
+                return image
+            }
+        }
+        
+        return UIImage(named: "default_marker")
+    }
+    
+    func saveAvatar(avatar: UIImage) {
+        if let imageData = avatar.pngData(),
+           var avatarFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+           let userLogin = UserDefaults.standard.string(forKey: "userLogin") {
+            avatarFilePath.appendPathComponent("Avatar_\(userLogin).jpeg")
+            
+            try? imageData.write(to: avatarFilePath)
+            UserDefaults.standard.set(imageData, forKey: "imageData")
+        }
+    }
+    
+    func resizeAvatar(_ avatar: UIImage, newSize: CGSize? = CGSize(width: 50, height: 50)) -> UIImage? {
+        let rect = CGRect(x: 0, y: 0, width: newSize!.width, height: newSize!.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize!, false, 1.0)
+        avatar.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage
     }
 }

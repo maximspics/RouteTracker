@@ -19,7 +19,7 @@ final class MainCoordinator: BaseCoordinator {
     }
     
     private func showMapModule() {
-        let controller = UIStoryboard(name: "Main", bundle: nil)
+        let controller = UIStoryboard(name: "Map", bundle: nil)
             .instantiateViewController(MapViewController.self)
         
         controller.onWorkoutList = { [weak self] in
@@ -28,6 +28,10 @@ final class MainCoordinator: BaseCoordinator {
         
         controller.onWorkoutDetails = { [weak self] (activityID: String, title: String) in
             self?.showWorkoutDetailModule(activityID, title)
+        }
+        
+        controller.onSettings = { [weak self] in
+            self?.showSettingsModule()
         }
         
         controller.onLogout = { [weak self] in
@@ -41,7 +45,7 @@ final class MainCoordinator: BaseCoordinator {
     }
     
     private func showWorkoutListModule() {
-        let controller = UIStoryboard(name: "Main", bundle: nil)
+        let controller = UIStoryboard(name: "Workout", bundle: nil)
             .instantiateViewController(WorkoutListViewController.self)
         
         controller.onWorkoutDetails = { [weak self] (activityID: String, title: String) in
@@ -60,7 +64,7 @@ final class MainCoordinator: BaseCoordinator {
     }
     
     private func showWorkoutDetailModule(_ activityID: String, _ title: String) {
-        let controller = UIStoryboard(name: "Main", bundle: nil)
+        let controller = UIStoryboard(name: "Workout", bundle: nil)
             .instantiateViewController(WorkoutDetailViewController.self)
         
         controller.activityID = activityID
@@ -68,6 +72,21 @@ final class MainCoordinator: BaseCoordinator {
         
         controller.didWorkoutSelect = { [weak self] activityID in
             self?.mapViewController?.onWorkoutSelect(activityID)
+        }
+        
+        let transitioningDelegate = TransitioningDelegate.shared
+        controller.modalPresentationStyle = .custom
+        controller.transitioningDelegate = transitioningDelegate
+        
+        rootController?.present(controller, animated: true)
+    }
+    
+    private func showSettingsModule() {
+        let controller = UIStoryboard(name: "Settings", bundle: nil)
+            .instantiateViewController(SettingsViewController.self)
+        
+        controller.didAvatarChanged = { [weak self] avatar in
+            self?.mapViewController?.onAvatarChanged(avatar)
         }
         
         let transitioningDelegate = TransitioningDelegate.shared
